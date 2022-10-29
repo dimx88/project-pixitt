@@ -6,12 +6,15 @@ import './Navbar.css';
 export default function Navbar() {
     return (
         <div className="navbar">
-            <div className="logo">
-                <span>(img)</span>
-                <span className="logo-text">Pixitt</span>
+            <div className="container">
+                <div className="logo">
+                    <span>(img)</span>
+                    <span className="logo-text">Pixitt</span>
+                </div>
+                <Link to='/login'>Login</Link>
+                <Link to='/signup'>Sign Up</Link>
+                <button className="btn">Logout</button>
             </div>
-            <Link to='/login'>Login</Link>
-            <Link to='/signup'>Sign Up</Link>
         </div>
     );
 }

@@ -1,17 +1,31 @@
 .navbar {
     background: var(--bg-color);
-    padding: 20px 20px;
-    border-bottom: 3px solid var(--primary-color);
+    padding: 0 20px;
+    /* border-bottom: 3px solid var(--primary-color); */
+}
+
+.navbar .container {
+    display: flex;
+    /* justify-content: space-between; */
+    align-items: center;
+    gap: 20px;
+}
+
+ .navbar .logo {
+    margin-right: auto;
 }
 
 .navbar .logo .logo-text {
+    margin-left: 10px;
     color: var(--text-color);
     font-weight: bold;
 }
 
 .navbar a {
+    padding: 20px 10px;
     color: var(--text-color);
     background: var(--bg-color);
+    text-decoration: none;
 }
 
 .navbar a:hover {

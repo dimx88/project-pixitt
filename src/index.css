@@ -17,10 +17,17 @@ body {
   --text-color: #333;
   --primary-color: #fdd565;
   --bg-color: #eee;
-  --max-width: 1100px;
+  --max-width: 1400px;
 }
 
 /* Global styles */
+
+.container {
+  /* max-width: var(--max-width); */
+  margin: auto;
+  overflow: hidden;
+}
+
 .error {
   color: red;
   background: pink;
@@ -28,4 +35,19 @@ body {
   border-radius: 4px;
   padding: 8px;
   margin: 10px 0;
+}
+
+.btn {
+  color: var(--text-color);
+  background-color: #fdd565;
+  font-size: 1.1rem;
+  font-weight: 100;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px soid var(--bg-color);
+}
+.btn:hover {
+  background-color: var(--text-color);
+  color: var(--bg-color);
+  cursor: pointer;
 }
