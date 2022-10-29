@@ -1,0 +1,19 @@
+.navbar {
+    background: var(--bg-color);
+    padding: 20px 20px;
+    border-bottom: 3px solid var(--primary-color);
+}
+
+.navbar .logo .logo-text {
+    color: var(--text-color);
+    font-weight: bold;
+}
+
+.navbar a {
+    color: var(--text-color);
+    background: var(--bg-color);
+}
+
+.navbar a:hover {
+    background: var(--primary-color);
+}
