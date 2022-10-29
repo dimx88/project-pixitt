@@ -1,0 +1,35 @@
+.home {
+    text-align: center;
+    padding-top: 50px;
+    color: var(--text-color);
+    user-select: none;
+}
+
+.home h1 {
+    font-size: 4rem;
+    font-weight: 900;
+    /* border-bottom: 10px solid var(--primary-color); */
+    padding-bottom: 40px;
+}
+
+.home .section {
+
+    background-color: var(--text-color);
+    color:#fff;
+    /* margin: 30px 0; */
+    padding: 60px 0;
+
+}
+
+.home .section:nth-child(odd) {
+    background-color: #fff;
+    color: var(--text-color);
+}
+
+.home .section h2 {
+    font-size: 2.6rem;
+    /* border-bottom: 10px solid var(--primary-color); */
+    margin-bottom: 30px;
+}
+
+.home .section p {}
