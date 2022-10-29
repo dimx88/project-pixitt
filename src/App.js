@@ -10,7 +10,7 @@ function App() {
         <Navbar />
         <h1>Hello world</h1>
         <Routes>
-
+          <Route path="" element="" />
         </Routes>
       </BrowserRouter >
     </div>
