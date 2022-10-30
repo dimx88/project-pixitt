@@ -1,6 +1,8 @@
 // Hooks
 import { useState } from 'react';
 
+import { useSignup } from '../../hooks/useSignup';
+
 // Styles
 import './Signup.css';
 
@@ -11,9 +13,12 @@ export default function Signup() {
     const [password, setPassword] = useState('');
     const [displayName, setDisplayName] = useState('');
 
+    const {signup} = useSignup();
+    
     const onSubmit = (e) => {
         e.preventDefault();
-        console.log(email, password, displayName);
+        // console.log(email, password, displayName);
+
     };
 
     return (
@@ -45,7 +50,7 @@ export default function Signup() {
                             value={displayName}
                         />
                     </label>
-                    <button className="btn">Sign Up</button>
+                    <button className="btn" disabled>Sign Up</button>
                 </form>
             </div>
 

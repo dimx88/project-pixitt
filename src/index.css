@@ -54,6 +54,13 @@ body {
   cursor: pointer;
 }
 
+.btn[disabled] {
+  background-color: #fff;
+  color:#333;
+  border: 1px solid #333;
+  /* cursor: progress; */
+}
+
 /* forms */
 label {
   display: block;
