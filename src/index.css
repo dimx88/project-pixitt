@@ -10,13 +10,14 @@
 
 body {
   font-family: Poppins, sans-serif;
+  background-color:  var(--bg-color);
 }
 
 /* Global vars */
 :root {
   --text-color: #333;
-  --primary-color: #fdd565;
-  --bg-color: #eee;
+  --primary-color: #a620ff;
+  --bg-color: rgb(247, 247, 247);
   --max-width: 1400px;
 }
 
@@ -38,16 +39,43 @@ body {
 }
 
 .btn {
-  color: var(--text-color);
-  background-color: #fdd565;
+  color: var(--primary-color);
+  background-color: transparent;
   font-size: 1.1rem;
   font-weight: 100;
   padding: 10px;
   border-radius: 10px;
-  border: 1px soid var(--bg-color);
+  border: 1px solid var(--primary-color);
 }
+
 .btn:hover {
-  background-color: var(--text-color);
-  color: var(--bg-color);
+  background-color: var(--primary-color);
+  color: #fff;
   cursor: pointer;
+}
+
+/* forms */
+label {
+  display: block;
+  margin: 24px auto;
+}
+
+label span {
+  display: block;
+  margin-bottom: 6px;
+}
+
+input,
+textarea {
+  padding: 8px 6px;
+  font-size: 1em;
+  color: #777;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+textarea {
+  min-height: 160px;
 }

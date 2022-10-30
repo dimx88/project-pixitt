@@ -1,6 +1,6 @@
 .navbar {
     background: var(--bg-color);
-    padding: 0 20px;
+    padding: 20px 80px;
     /* border-bottom: 3px solid var(--primary-color); */
 }
 
@@ -23,12 +23,13 @@
 }
 
 .navbar a {
-    padding: 20px 10px;
+    font-size: 1.1rem;
+    text-align: center;
     color: var(--text-color);
     background: var(--bg-color);
     text-decoration: none;
 }
 
 .navbar a:hover {
-    background: var(--primary-color);
+    color: var(--primary-color);
 }
