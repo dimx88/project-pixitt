@@ -13,11 +13,12 @@ export default function Signup() {
     const [password, setPassword] = useState('');
     const [displayName, setDisplayName] = useState('');
 
-    const {signup} = useSignup();
+    const {signup, isPending, error} = useSignup();
     
     const onSubmit = (e) => {
         e.preventDefault();
         // console.log(email, password, displayName);
+        signup(email, password, displayName);
 
     };
 
@@ -50,7 +51,9 @@ export default function Signup() {
                             value={displayName}
                         />
                     </label>
-                    <button className="btn" disabled>Sign Up</button>
+                    {!isPending && <button className="btn">Sign Up</button>}
+                    {isPending && <button className="btn" disabled>Loading...</button>}
+                    {error && <div className="error"></div>}
                 </form>
             </div>
 
