@@ -6,7 +6,7 @@ import './Home.css';
 export default function Home() {
     return (
         <div className="home">
-            <h1>temp-name</h1>
+            <h1>Pixley</h1>
             <div className="section">
                 <div className="container">
                 <div className="title-container">

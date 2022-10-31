@@ -10,7 +10,11 @@ let initialState = {
     success: null
 };
 
-const firestoreReducer = (state, action) => {
+export const useFirestore = (collectionName) => {
+    const [response, dispatch] = useReducer(firestoreReducer, initialState);
+    const [isCanceled, setIsCanceled] = useState(false);
+
+    function firestoreReducer(state, action) {
     switch (action.type) {
         case 'IS_PENDING':
             return { isPending: true, document: null, success: null, error: null };
@@ -27,69 +31,57 @@ const firestoreReducer = (state, action) => {
     }
 };
 
-export const useFirestore = (collectionName) => {
-    const [response, dispatch] = useReducer(firestoreReducer, initialState);
-    const [isCanceled, setIsCanceled] = useState(false);
+// Collection ref
+const colRef = collection(db, collectionName);
 
-    // Collection ref
-    const colRef = collection(db, collectionName);
+// Only dispatch if not canceled
+const dispatchIfNotCanceled = (action) => {
+    if (!isCanceled) {
+        dispatch(action);
+    }
+};
 
-    // Only dispatch if not canceled
-    const dispatchIfNotCanceled = (action) => {
-        if (!isCanceled) {
-            dispatch(action);
-        }
-    };
+// Add a document
+const addDocument = async (doc) => {
+    dispatch({ type: 'IS_PENDING' });
 
-    // Add a document
-    const addDocument = async (doc) => {
-        dispatch({ type: 'IS_PENDING' });
+    try {
+        const createdAt = serverTimestamp();
+        const addedDocument = await addDoc(colRef, { ...doc, createdAt });
+        dispatchIfNotCanceled({ type: 'ADDED_DOCUMENT', payload: addedDocument });
+    } catch (err) {
+        dispatchIfNotCanceled({ type: 'ERROR', payload: err.message });
+    }
+};
 
-        try {
-            const createdAt = serverTimestamp();
-            console.log('serverTimestamp: ' + createdAt);
-            console.log('executing addDocument...');
-            const addedDocument = await addDoc(colRef, { ...doc, createdAt });
-            console.log('addedDocument = ' + addedDocument);
-            dispatchIfNotCanceled({ type: 'ADDED_DOCUMENT', payload: addedDocument });
-        } catch (err) {
-            dispatchIfNotCanceled({ type: 'ERROR', payload: err.message });
-        }
-    };
+// Delete a document
+const deleteDocument = async (id) => {
+    dispatch({ type: 'IS_PENDING' });
 
-    // Delete a document
-    const deleteDocument = async (id) => {
-        dispatch({ type: 'IS_PENDING' });
-        
-        try {
-            const docRef = doc(db, collectionName, id);
-            await deleteDoc(docRef);
-            dispatchIfNotCanceled({ type: 'DELETED_DOCUMENT' });
-        } catch (err) {
-            dispatchIfNotCanceled({ type: 'ERROR', payload: 'could not delete document' });
-        }
-    };
+    try {
+        const docRef = doc(db, collectionName, id);
+        await deleteDoc(docRef);
+        dispatchIfNotCanceled({ type: 'DELETED_DOCUMENT' });
+    } catch (err) {
+        dispatchIfNotCanceled({ type: 'ERROR', payload: 'could not delete document' });
+    }
+};
 
-    // Update a document
-    const updateDocument = async (id, updates) => {
-        dispatch({ type: 'IS_PENDING' });
-        
-        try {
+// Update a document
+const updateDocument = async (id, updates) => {
+    dispatch({ type: 'IS_PENDING' });
 
-            const docRef = doc(db, collectionName, id); 
+    try {
+        const docRef = doc(db, collectionName, id);
+        const updatedDocument = await updateDoc(docRef, updates);
+        dispatchIfNotCanceled({ type: 'UPDATED_DOCUMENT', payload: updatedDocument });
+    } catch (err) {
+        dispatchIfNotCanceled({ type: 'ERROR', payload: 'could not update document' });
+    }
+};
 
-            const updatedDocument = await updateDoc(docRef, updates);
+// Cleanup function
+useEffect(() => { return () => setIsCanceled(true) }, [])
 
-            console.log('updated');
-            dispatchIfNotCanceled({ type: 'UPDATED_DOCUMENT', payload: updatedDocument});
-
-        } catch (err) {
-            dispatchIfNotCanceled({ type: 'ERROR', payload: 'could not update document' });
-        }
-    };
-
-    // Cleanup function
-    useEffect(() => { return () => setIsCanceled(true) }, [])
-
-    return { addDocument, updateDocument, deleteDocument, response };
+return { addDocument, updateDocument, deleteDocument, response };
 };
