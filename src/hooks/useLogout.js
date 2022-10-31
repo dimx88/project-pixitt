@@ -2,29 +2,24 @@ import { useState } from 'react';
 import { useAuthContext } from './useAuthContext';
 
 import { auth } from '../firebase/config';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signOut } from 'firebase/auth';
 
-export const useLogin = () => {
+export const useLogout = () => {
     const [isPending, setIsPending] = useState(false);
     const [error, setError] = useState(null);
 
     const {dispatch} = useAuthContext();
 
-    const login = async (email, password) => {
+    const logout = async () => {
         setError(null);
         setIsPending(true);
 
         try {
-            const response = await signInWithEmailAndPassword(auth, email, password);
-            if (!response) {
-                throw new Error('Failed to log in');
-            }
+            await signOut(auth);
 
-
-            dispatch({type: 'LOGIN', payload: response.user});
+            dispatch({type: 'LOGOUT'});
             setIsPending(false);
             setError(null);
-
 
         } catch (err) {
             console.log(err.message);
@@ -33,5 +28,5 @@ export const useLogin = () => {
         }
     };
 
-    return {login, isPending, error};
+    return {logout, isPending, error};
 };
