@@ -40,12 +40,19 @@ export default function Navbar() {
 
                     {user &&
                         <>
+                            <li><Link to='/create'>Create</Link></li>
+                            <li><Link to='/gallery'>Gallery</Link></li>
+
+                            <div className="nav-seperator"></div>
                             {!isPending &&
                                 <>
-                                    <p>Hi, <strong>{user.displayName}</strong></p> 
-                                    <button className="btn" onClick={handleLogout}>Logout</button>
+
+                                    <li>
+                                        <p>Hi, <strong>{user.displayName}</strong></p>
+                                        <button className="btn" onClick={handleLogout}>Logout</button>
+                                    </li>
                                 </>}
-                            {isPending && <button className="btn" disabled>Logout</button>}
+                            {isPending && <li><button className="btn" disabled>Logout</button></li>}
                         </>
                     }
                 </ul>
