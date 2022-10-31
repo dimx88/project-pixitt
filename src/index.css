@@ -38,6 +38,10 @@ body {
   margin: 10px 0;
 }
 
+ul {
+  list-style-type: none;
+}
+
 .btn {
   color: var(--primary-color);
   background-color: transparent;
