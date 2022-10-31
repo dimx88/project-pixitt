@@ -11,13 +11,13 @@ import Create from "./pages/create/Create";
 import { useAuthContext } from "./hooks/useAuthContext";
 
 // Routing
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 
 function App() {
 
-  const { authIsReady } = useAuthContext();
-  
+  const { authIsReady, user } = useAuthContext();
+
   if (!authIsReady) return (<div>...</div>);
 
   return (
@@ -27,9 +27,11 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/gallery" element={<Gallery />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/create" element={<Create />} />
+          <Route path="/login" element={!user ? (<Login />) : (<Navigate to='/' replace />)}/>
+
+          <Route path="/signup" element={!user ? (<Signup />) : (<Navigate to='/' replace />)} />
+
+          <Route path="/create" element={user ? (<Create />) : (<Navigate to='/login' replace/>)} />
         </Routes>
       </BrowserRouter >
     </div>
