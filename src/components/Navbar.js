@@ -31,9 +31,12 @@ export default function Navbar() {
                             <span>(img)</span>
                         </Link>
                     </div>
+                    <li><Link to='/gallery'>Gallery</Link></li>
+                    <div className="nav-seperator"></div>
                     {!user &&
                         <>
                             <li><Link to='/login'>Login</Link></li>
+                            <div className="nav-seperator"></div>
                             <li><Link to='/signup'>Sign Up</Link></li>
                         </>
                     }
@@ -41,12 +44,9 @@ export default function Navbar() {
                     {user &&
                         <>
                             <li><Link to='/create'>Create</Link></li>
-                            <li><Link to='/gallery'>Gallery</Link></li>
-
                             <div className="nav-seperator"></div>
                             {!isPending &&
                                 <>
-
                                     <li>
                                         <p>Hi, <strong>{user.displayName}</strong></p>
                                         <button className="btn" onClick={handleLogout}>Logout</button>
