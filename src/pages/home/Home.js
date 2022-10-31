@@ -6,23 +6,29 @@ import './Home.css';
 export default function Home() {
     return (
         <div className="home">
-            <h1>Welcome to Pixitt</h1>
+            <h1>temp-name</h1>
             <div className="section">
                 <div className="container">
-                    <h2>Create</h2>
-                    <p>Express yourself with fixed sized pixel drawings, using Pixitt's clean minimalistic interface</p>
+                <div className="title-container">
+                        <h2>Create</h2>
+                    </div>
+                    <p>Express yourself on a fixed sized canvas, <br /> with an intuitive, minimalistic tool set</p>
                 </div>
             </div>
             <div className="section">
                 <div className="container">
-                    <h2>Share</h2>
+                <div className="title-container">
+                        <h2>Share</h2>
+                    </div>
                     <p>Share your creations with the world</p>
                 </div>
             </div>
             <div className="section">
                 <div className="container">
-                    <h2>Discover</h2>
-                    <p>Watch and get inspired by other people's creations</p>
+                    <div className="title-container">
+                        <h2>Discover</h2>
+                    </div>
+                    <p>Watch other's art and get ispired</p>
                 </div>
             </div>
         </div>
