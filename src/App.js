@@ -7,11 +7,19 @@ import Login from "./pages/login/Login";
 import Signup from "./pages/signup/Signup";
 import Create from "./pages/create/Create";
 
+// Hooks 
+import { useAuthContext } from "./hooks/useAuthContext";
+
 // Routing
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 
 function App() {
+
+  const { authIsReady } = useAuthContext();
+  
+  if (!authIsReady) return (<div>...</div>);
+
   return (
     <div className="App">
       <BrowserRouter>
