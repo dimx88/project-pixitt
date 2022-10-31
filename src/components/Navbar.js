@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useLogout } from '../hooks/useLogout';
@@ -13,6 +13,13 @@ export default function Navbar() {
 
     const { logout, isPending, error } = useLogout();
     const { user } = useAuthContext();
+
+    const nav = useNavigate();
+
+    const handleLogout = async (e) => {
+        await logout();
+        nav('/');
+    };
 
     return (
         <nav className="navbar">
@@ -33,7 +40,11 @@ export default function Navbar() {
 
                     {user &&
                         <>
-                            <p>Hi, <strong>{user.displayName}</strong></p>{!isPending && <button className="btn" onClick={logout}>Logout</button>}
+                            {!isPending &&
+                                <>
+                                    <p>Hi, <strong>{user.displayName}</strong></p> 
+                                    <button className="btn" onClick={handleLogout}>Logout</button>
+                                </>}
                             {isPending && <button className="btn" disabled>Logout</button>}
                         </>
                     }
