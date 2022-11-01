@@ -25,13 +25,17 @@ function App() {
       <BrowserRouter>
         <Navbar />
         <Routes>
+
           <Route path="/" element={<Home />} />
+
           <Route path="/gallery" element={<Gallery />} />
-          <Route path="/login" element={!user ? (<Login />) : (<Navigate to='/' replace />)}/>
+
+          <Route path="/login" element={!user ? (<Login />) : (<Navigate to='/' replace />)} />
 
           <Route path="/signup" element={!user ? (<Signup />) : (<Navigate to='/' replace />)} />
 
-          <Route path="/create" element={user ? (<Create />) : (<Navigate to='/login' replace/>)} />
+          <Route path="/create" element={user ? (<Create />) : (<Navigate to='/login' replace />)} />
+
         </Routes>
       </BrowserRouter >
     </div>

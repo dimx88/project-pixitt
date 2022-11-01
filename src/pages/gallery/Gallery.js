@@ -1,3 +1,4 @@
+import GalleryDisplay from '../../components/GalleryDisplay';
 
 // Styles
 import './Gallery.css';
@@ -6,7 +7,10 @@ import './Gallery.css';
 export default function Gallery() {
     return (
         <div className="gallery">
-            <h1>Gallery</h1>
+            <div className="container">
+                <h1 className="title">Gallery</h1>
+                <GalleryDisplay />
+            </div>
         </div>
     );
 }

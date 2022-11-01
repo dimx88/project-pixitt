@@ -27,8 +27,8 @@ export default function Navbar() {
                 <ul>
                     <div className="logo">
                         <Link to='/'>
-                            <span className="logo-text">Pixitt</span>
-                            <span>(img)</span>
+                            <span className="logo-text">PixCanvas</span>
+                            <span>✨</span>
                         </Link>
                     </div>
                     <li><Link to='/gallery'>Gallery</Link></li>

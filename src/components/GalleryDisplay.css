@@ -1,0 +1,19 @@
+.gallery-display {
+
+       display: grid;
+       grid-template-columns: repeat(3, auto);
+       justify-content: center;
+       gap: 30px;
+      
+}
+
+.gallery-display .item {
+    user-select: none;
+    border: 1px solid red;
+    background: rgb(255, 208, 208);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    width: 300px;
+}
