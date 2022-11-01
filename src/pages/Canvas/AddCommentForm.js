@@ -23,7 +23,7 @@ export default function AddCommentForm({ canvasID }) {
         e.preventDefault();
    
         const commentData = { comment, uid: user.uid, displayName: user.displayName };
-        addDocument({commentData});
+        addDocument(commentData);
 
     };
 

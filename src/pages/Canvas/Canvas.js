@@ -5,8 +5,10 @@ import CanvasDetails from './CanvasDetails';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDocument } from '../../hooks/useDocument';
 import AddCommentForm from './AddCommentForm';
+import DisplayComments from './DisplayComments';
 
-
+// Styles
+import './Canvas.css';
 
 export default function Canvas() {
     const { id: canvasID } = useParams();
@@ -21,7 +23,8 @@ export default function Canvas() {
         <div className="canvas">
             <div className="container">
                 {document && <CanvasDetails canvas={document} className="canvas-details" />}
-                {document && <AddCommentForm canvasID={document.id}/>}
+                {document && <AddCommentForm canvasID={document.id} />}
+                {document && <DisplayComments canvasID={document.id} />}
             </div>
         </div>
     );

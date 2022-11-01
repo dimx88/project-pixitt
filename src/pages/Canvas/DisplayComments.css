@@ -1,0 +1,28 @@
+.display-comments {
+    margin: auto;
+    border: 1px solid #ddd;
+    padding: 20px;
+    max-width: 600px;
+}
+
+.display-comments .title {
+    margin-bottom: 10px;
+}
+
+.display-comments .comment {
+    border: 1px solid #ddd;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    padding: 5px 10px;
+}
+
+.display-comments .comment .author {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.display-comments .comment .date {
+    font-weight: 300;
+    font-size: 0.95rem;
+    margin-bottom: 5px;
+}
