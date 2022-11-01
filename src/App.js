@@ -31,7 +31,7 @@ function App() {
 
           <Route path="/gallery" element={<Gallery />} />
 
-          <Route path="/canvas/:id" element={<Canvas></Canvas>}/>
+          <Route path="/canvas/:id" element={<Canvas></Canvas>} />
 
           <Route path="/login" element={!user ? (<Login />) : (<Navigate to='/' replace />)} />
 
@@ -39,6 +39,7 @@ function App() {
 
           <Route path="/create" element={user ? (<Create />) : (<Navigate to='/login' replace />)} />
 
+          <Route path="*" element={<Navigate to='/' replace />} />
         </Routes>
       </BrowserRouter >
     </div>

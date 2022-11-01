@@ -11,8 +11,6 @@ import './Gallery.css';
 export default function Gallery() {
     
     const {documents, error} = useCollection('test');
-    console.log(documents);
-
 
     return (
         <div className="gallery">
