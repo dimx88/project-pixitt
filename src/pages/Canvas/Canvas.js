@@ -10,7 +10,7 @@ export default function Canvas() {
     console.log(canvasID);
     return (
         <div className="canvas">
-            <h1>Canvas ID {canvasID}</h1>
+            <h1>Canvas ID: {canvasID}</h1>
         </div>
     );
 }
