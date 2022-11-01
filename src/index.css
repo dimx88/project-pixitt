@@ -10,7 +10,8 @@
 
 body {
   font-family: Poppins, sans-serif;
-  background-color:  var(--bg-color);
+  background-color: var(--bg-color);
+  color: var(--text-color)
 }
 
 /* Global vars */
@@ -38,6 +39,15 @@ body {
   margin: 10px 0;
 }
 
+a {
+  text-decoration: none;
+  color: var(--text-color);
+}
+
+a:hover {
+  color: var(--primary-color);
+}
+
 ul {
   list-style-type: none;
 }
@@ -60,7 +70,7 @@ ul {
 
 .btn[disabled] {
   background-color: #fff;
-  color:#333;
+  color: #333;
   border: 1px solid #333;
   /* cursor: progress; */
 }

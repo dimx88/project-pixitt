@@ -1,4 +1,4 @@
-
+import { Link } from 'react-router-dom';
 
 // Styles
 import './GalleryDisplay.css';
@@ -15,7 +15,7 @@ export default function GalleryDisplay({ documents }) {
                         <img src={doc.canvasImgURL} alt={`${doc.canvasTitle} Image`} className="image" />
                         <div className="image-overlay"></div>
                     </div>
-                    <p>By <strong>{doc.createdBy}</strong> </p>
+                    <p>By <strong><Link>{doc.createdBy}</Link></strong> </p>
                 </div>
             ))}
         </div>

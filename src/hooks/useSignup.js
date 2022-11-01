@@ -24,7 +24,7 @@ export const useSignup = () => {
             }
 
             // Add display name 
-            updateProfile(response.user, {displayName});
+            await updateProfile(response.user, {displayName});
 
             // Dispatch login action
             dispatch({type:'LOGIN', payload: response.user});
