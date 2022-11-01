@@ -18,7 +18,9 @@ export default function Canvas() {
 
     return (
         <div className="canvas">
-            <h1>Canvas ID: {canvasID}</h1>
+            <div className="container">
+                {document && <CanvasDetails canvas={document} className="canvas-details" />}
+            </div>
         </div>
     );
 

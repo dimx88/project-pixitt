@@ -12,7 +12,7 @@ export default function Home() {
                 <div className="title-container">
                         <h2>Create</h2>
                     </div>
-                    <p>Express yourself on a fixed sized canvas, <br /> with an intuitive, minimalistic tool set</p>
+                    <p>Express yourself on a fixed-size canvas, <br /> using an intuitive, minimalistic tool set</p>
                 </div>
             </div>
             <div className="section">
