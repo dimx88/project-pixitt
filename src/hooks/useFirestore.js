@@ -10,12 +10,12 @@ let initialState = {
     success: null
 };
 
-export const useFirestore = (collectionName) => {
+export const useFirestore = (...collectionName) => {
     const [response, dispatch] = useReducer(firestoreReducer, initialState);
     const [isCanceled, setIsCanceled] = useState(false);
 
     function firestoreReducer(state, action) {
-        console.log('dispatched' + action.type)
+        console.log('dispatched ' + action.type)
     switch (action.type) {
         case 'IS_PENDING':
             return { isPending: true, document: null, success: null, error: null };
@@ -33,7 +33,7 @@ export const useFirestore = (collectionName) => {
 };
 
 // Collection ref
-const colRef = collection(db, collectionName);
+const colRef = collection(db, ...collectionName);
 
 // Only dispatch if not canceled
 const dispatchIfNotCanceled = (action) => {
@@ -61,7 +61,7 @@ const deleteDocument = async (id) => {
     dispatch({ type: 'IS_PENDING' });
 
     try {
-        const docRef = doc(db, collectionName, id);
+        const docRef = doc(db, ...collectionName, id);
         await deleteDoc(docRef);
         dispatchIfNotCanceled({ type: 'DELETED_DOCUMENT' });
     } catch (err) {
@@ -74,7 +74,7 @@ const updateDocument = async (id, updates) => {
     dispatch({ type: 'IS_PENDING' });
 
     try {
-        const docRef = doc(db, collectionName, id);
+        const docRef = doc(db, ...collectionName, id);
         const updatedDocument = await updateDoc(docRef, updates);
         dispatchIfNotCanceled({ type: 'UPDATED_DOCUMENT', payload: updatedDocument });
     } catch (err) {

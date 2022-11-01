@@ -21,7 +21,7 @@ export default function Canvas() {
         <div className="canvas">
             <div className="container">
                 {document && <CanvasDetails canvas={document} className="canvas-details" />}
-                {document && <AddCommentForm />}
+                {document && <AddCommentForm canvasID={document.id}/>}
             </div>
         </div>
     );
