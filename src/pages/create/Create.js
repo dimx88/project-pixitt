@@ -20,7 +20,7 @@ export default function Create() {
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        const uploadedDoc = await addDocument({canvasTitle, canvasInfo, canvasImgURL, uid:user.uid});
+        const uploadedDoc = await addDocument({canvasTitle, canvasInfo, canvasImgURL, uid:user.uid, createdBy:user.displayName});
         console.log('success');
         console.log(response);
         // console.log(canvasTitle, canvasInfo, canvasImgURL, user.uid);

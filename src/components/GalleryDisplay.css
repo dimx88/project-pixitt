@@ -1,19 +1,21 @@
 .gallery-display {
 
-       display: grid;
-       grid-template-columns: repeat(3, auto);
-       justify-content: center;
-       gap: 30px;
-      
+    display: grid;
+    grid-template-columns: repeat(3, 300px);
+    grid-auto-rows: 300px;
+    justify-content: center;
+    gap: 30px;
+
 }
 
-.gallery-display .item {
-    user-select: none;
-    border: 1px solid red;
-    background: rgb(255, 208, 208);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 300px;
-    width: 300px;
+
+
+.gallery-display .gallery-item {
+    text-align: center;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1);
+}
+
+.gallery-display .gallery-item img {    
+    width: 100px;
+    height: 100px;
 }

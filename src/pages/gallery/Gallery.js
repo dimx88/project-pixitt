@@ -1,15 +1,25 @@
+// Components
 import GalleryDisplay from '../../components/GalleryDisplay';
+
+// Hooks
+import { useCollection } from '../../hooks/useCollection';
 
 // Styles
 import './Gallery.css';
 
 
 export default function Gallery() {
+    
+    const {documents, error} = useCollection('test');
+    console.log(documents);
+
+
     return (
         <div className="gallery">
             <div className="container">
                 <h1 className="title">Gallery</h1>
-                <GalleryDisplay />
+                {documents && <GalleryDisplay documents={documents}/>}
+                {error && <div className="error">{error}</div>}
             </div>
         </div>
     );
