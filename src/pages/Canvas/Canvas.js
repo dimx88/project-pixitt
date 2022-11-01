@@ -1,5 +1,5 @@
 // Components
-import CanvasDetails from '../../components/CanvasDetails';
+import CanvasDetails from './CanvasDetails';
 
 // Hooks
 import { useNavigate, useParams } from 'react-router-dom';
