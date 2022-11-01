@@ -1,5 +1,8 @@
 .canvas-details h1,
-.canvas-details .created-by {
+.canvas-details .created-by, 
+.canvas-details .description-title,
+.canvas-details .description, 
+.canvas-details .created-at {
     text-align: center;
 }
 

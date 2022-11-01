@@ -10,7 +10,7 @@ import './Gallery.css';
 
 export default function Gallery() {
     
-    const {documents, error} = useCollection('test');
+    const {documents, error} = useCollection('canvases');
 
     return (
         <div className="gallery">

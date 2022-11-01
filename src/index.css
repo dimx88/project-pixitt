@@ -8,11 +8,13 @@
   box-sizing: border-box;
 }
 
+
 body {
   font-family: Poppins, sans-serif;
   background-color: var(--bg-color);
-  color: var(--text-color)
+  color: var(--text-color);
 }
+
 
 /* Global vars */
 :root {
@@ -95,8 +97,4 @@ textarea {
   box-sizing: border-box;
   border: 1px solid #ddd;
   border-radius: 4px;
-}
-
-textarea {
-  min-height: 160px;
 }

@@ -12,7 +12,7 @@ import './Create.css';
 
 
 export default function Create() {
-    const { addDocument, response } = useFirestore('test');
+    const { addDocument, response } = useFirestore('canvases');
 
     const [canvasTitle, setCanvasTitle] = useState('');
     const [canvasInfo, setCanvasInfo] = useState('');
@@ -25,7 +25,7 @@ export default function Create() {
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        const uploadedDoc = await addDocument({canvasTitle, canvasInfo, canvasImgURL, uid:user.uid, createdBy:user.displayName});
+        await addDocument({canvasTitle, canvasInfo, canvasImgURL, uid:user.uid, createdBy:user.displayName});
         nav('/gallery');
     };
 

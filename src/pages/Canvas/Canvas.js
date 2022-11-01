@@ -4,6 +4,7 @@ import CanvasDetails from '../../components/CanvasDetails';
 // Hooks
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDocument } from '../../hooks/useDocument';
+import AddCommentForm from './AddCommentForm';
 
 
 
@@ -11,7 +12,7 @@ export default function Canvas() {
     const { id: canvasID } = useParams();
 
 
-    const { document, error } = useDocument('test', canvasID);
+    const { document, error } = useDocument('canvases', canvasID);
     const nav = useNavigate();
 
     if (error) nav('/gallery');
@@ -20,6 +21,7 @@ export default function Canvas() {
         <div className="canvas">
             <div className="container">
                 {document && <CanvasDetails canvas={document} className="canvas-details" />}
+                {document && <AddCommentForm />}
             </div>
         </div>
     );

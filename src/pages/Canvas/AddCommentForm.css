@@ -1,0 +1,30 @@
+.add-comment {
+    margin: 0 auto;
+    max-width: 400px;
+    max-width: 600px;
+    color: var(--text-color);
+    background-color: #fff;
+    padding: 10px 35px;
+    border: 1px solid #ddd;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+}
+
+.add-comment h1 {
+    text-align: center;
+}
+
+.add-comment .btn {
+    /* display: block; */
+    /* margin: auto; */
+    transform: translateY(10px);
+    height: fit-content;
+    width: fit-content;
+}
+
+.add-comment textarea {
+    resize: none;
+    height: 100px;
+    width: 400px;
+}
