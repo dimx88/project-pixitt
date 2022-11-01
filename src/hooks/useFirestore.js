@@ -15,6 +15,7 @@ export const useFirestore = (collectionName) => {
     const [isCanceled, setIsCanceled] = useState(false);
 
     function firestoreReducer(state, action) {
+        console.log('dispatched' + action.type)
     switch (action.type) {
         case 'IS_PENDING':
             return { isPending: true, document: null, success: null, error: null };
@@ -48,6 +49,7 @@ const addDocument = async (doc) => {
     try {
         const createdAt = serverTimestamp();
         const addedDocument = await addDoc(colRef, { ...doc, createdAt });
+
         dispatchIfNotCanceled({ type: 'ADDED_DOCUMENT', payload: addedDocument });
     } catch (err) {
         dispatchIfNotCanceled({ type: 'ERROR', payload: err.message });

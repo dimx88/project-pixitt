@@ -4,6 +4,9 @@ import { useFirestore } from '../../hooks/useFirestore';
 import { useAuthContext } from '../../hooks/useAuthContext';
 
 
+import { useNavigate } from 'react-router-dom';
+
+
 // Styles
 import './Create.css';
 
@@ -17,14 +20,13 @@ export default function Create() {
 
     const { user } = useAuthContext();
 
+    const nav = useNavigate();
+
 
     const onSubmit = async (e) => {
         e.preventDefault();
         const uploadedDoc = await addDocument({canvasTitle, canvasInfo, canvasImgURL, uid:user.uid, createdBy:user.displayName});
-        console.log('success');
-        console.log(response);
-        // console.log(canvasTitle, canvasInfo, canvasImgURL, user.uid);
-
+        nav('/gallery');
     };
 
     return (
