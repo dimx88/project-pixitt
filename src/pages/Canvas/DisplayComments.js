@@ -1,12 +1,14 @@
 // Hooks
 import { useCollection } from '../../hooks/useCollection';
-
+import { useFirestore } from '../../hooks/useFirestore'; ////////////////////
 
 // Styles
 import './DisplayComments.css';
 
 export default function DisplayComments({ canvasID }) {
 
+    const {deleteDocument, updateDocument} = useFirestore(`canvases/${canvasID}/comments`); /////////////////
+    
     // const { documents: comments, error } = useCollection(['canvases', canvasID, 'comments']);
     const { documents: comments, error } = useCollection(`canvases/${canvasID}/comments`);
 
@@ -23,6 +25,8 @@ export default function DisplayComments({ canvasID }) {
                     {comment.createdAt && <p className="date">{comment.createdAt.toDate().toDateString()}</p>}
 
                     <p>{comment.comment}</p>
+
+                    {/* <button className="btn" onClick={() => deleteDocument(comment.id)}>delete</button> */}
                 </div>
             ))}
         </div>
