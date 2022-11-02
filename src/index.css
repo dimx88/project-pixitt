@@ -20,6 +20,7 @@ body {
 :root {
   --text-color: #333;
   --primary-color: #a620ff;
+  --primary-color: #53994d;
   --bg-color: rgb(236, 236, 236);
   --max-width: 1400px;
 }

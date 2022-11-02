@@ -7,7 +7,8 @@ import './DisplayComments.css';
 
 export default function DisplayComments({ canvasID }) {
 
-    const { documents: comments, error } = useCollection(['canvases', canvasID, 'comments']);
+    // const { documents: comments, error } = useCollection(['canvases', canvasID, 'comments']);
+    const { documents: comments, error } = useCollection(`canvases/${canvasID}/comments`);
 
     if (!comments) return <div>Loading comments...</div>;
 

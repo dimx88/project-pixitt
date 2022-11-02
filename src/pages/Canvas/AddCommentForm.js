@@ -16,7 +16,7 @@ export default function AddCommentForm({ canvasID }) {
     const { user } = useAuthContext();
     const [comment, setComment] = useState('');
 
-    const { addDocument, response } = useFirestore('canvases', canvasID, 'comments');
+    const { addDocument, response } = useFirestore(`canvases/${canvasID}/comments`);
 
 
     const onSubmit = (e) => {
@@ -25,6 +25,7 @@ export default function AddCommentForm({ canvasID }) {
         const commentData = { comment, uid: user.uid, displayName: user.displayName };
         addDocument(commentData);
 
+        setComment('');
     };
 
     return (

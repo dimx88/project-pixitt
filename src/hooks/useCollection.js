@@ -2,8 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { db } from "../firebase/config";
 import { collection, onSnapshot, query, where, orderBy } from "firebase/firestore";
 
-// If you want an inner collection pass _collectionPath as an array
-export const useCollection = (_collectionPath, _queryParams, _orderByParams) => {
+export const useCollection = (collectionName, _queryParams, _orderByParams) => {
     const [documents, setDocuments] = useState(null);
     const [error, setError] = useState(null);
 
@@ -13,10 +12,9 @@ export const useCollection = (_collectionPath, _queryParams, _orderByParams) => 
      */
     const queryParams = useRef(_queryParams).current;
     const orderByParams = useRef(_orderByParams).current;
-    const collectionPath = useRef(_collectionPath).current;
 
     useEffect(() => {
-        let ref = collection(db, ...collectionPath);
+        let ref = collection(db, collectionName);
 
         // If queryParams were passed to useCollection, change ref to represent the query 
         if (queryParams) {
@@ -47,7 +45,7 @@ export const useCollection = (_collectionPath, _queryParams, _orderByParams) => 
         // Unsubscribe when the containing component unmounts
         return () => unsubscribe();
 
-    }, [collectionPath, queryParams, orderByParams]);
+    }, [collectionName, queryParams, orderByParams]);
 
     return { documents, error, orderBy };
 };
