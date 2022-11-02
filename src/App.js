@@ -6,7 +6,7 @@ import Gallery from "./pages/gallery/Gallery";
 import Login from "./pages/login/Login";
 import Signup from "./pages/signup/Signup";
 import Create from "./pages/create/Create";
-import Canvas from "./pages/Canvas/Canvas";
+import Drawing from "./pages/Drawing/Drawing";
 
 // Hooks 
 import { useAuthContext } from "./hooks/useAuthContext";
@@ -31,7 +31,7 @@ function App() {
 
           <Route path="/gallery" element={<Gallery />} />
 
-          <Route path="/canvas/:id" element={<Canvas></Canvas>} />
+          <Route path="/drawing/:id" element={<Drawing />} />
 
           <Route path="/login" element={!user ? (<Login />) : (<Navigate to='/' replace />)} />
 

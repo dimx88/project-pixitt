@@ -1,0 +1,23 @@
+.drawing-details h1,
+.drawing-details .created-by, 
+.drawing-details .description-title,
+.drawing-details .description, 
+.drawing-details .created-at {
+    text-align: center;
+}
+
+.drawing-details h1 {
+    margin-bottom: 10px;
+}
+
+.drawing-details .created-by {
+    margin-bottom: 20px;
+}
+
+
+.drawing-details .image {
+    display: block;
+    margin: 0 auto;
+    box-shadow: 7px 7px 7px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}

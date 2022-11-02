@@ -1,5 +1,5 @@
 // Components
-import CanvasDetails from './CanvasDetails';
+import DrawingDetails from './DrawingDetails';
 
 // Hooks
 import { useNavigate, useParams } from 'react-router-dom';
@@ -12,26 +12,26 @@ import { useFirestore } from '../../hooks/useFirestore';    ///////////////
 
 
 // Styles
-import './Canvas.css';
+import './Drawing.css';
 
-export default function Canvas() {
+export default function Drawing() {
 
     const { user } = useAuthContext();
-    const { id: canvasID } = useParams();
+    const { id: drawingID } = useParams();
 
 
-    const { document, error } = useDocument('canvases', canvasID);
+    const { document, error } = useDocument('drawings', drawingID);
     const nav = useNavigate();
 
     if (error) nav('/gallery');
 
     return (
-        <div className="canvas">
+        <div className="drawing">
             <div className="container">
 
-                {document && <CanvasDetails canvas={document} className="canvas-details" />}
-                {user && document && <AddCommentForm canvasID={document.id} />}
-                {document && <DisplayComments canvasID={document.id} />}
+                {document && <DrawingDetails drawing={document} className="drawing-details" />}
+                {user && document && <AddCommentForm drawingID={document.id} />}
+                {document && <DisplayComments drawingID={document.id} />}
 
             </div>
         </div>

@@ -5,12 +5,12 @@ import { useFirestore } from '../../hooks/useFirestore'; ////////////////////
 // Styles
 import './DisplayComments.css';
 
-export default function DisplayComments({ canvasID }) {
+export default function DisplayComments({ drawingID }) {
 
-    const {deleteDocument, updateDocument} = useFirestore(`canvases/${canvasID}/comments`); /////////////////
+    const {deleteDocument, updateDocument} = useFirestore(`drawings/${drawingID}/comments`); /////////////////
     
-    // const { documents: comments, error } = useCollection(['canvases', canvasID, 'comments']);
-    const { documents: comments, error } = useCollection(`canvases/${canvasID}/comments`);
+    // const { documents: comments, error } = useCollection(['drawings', drawingID, 'comments']);
+    const { documents: comments, error } = useCollection(`drawings/${drawingID}/comments`);
 
     if (!comments) return <div>Loading comments...</div>;
 

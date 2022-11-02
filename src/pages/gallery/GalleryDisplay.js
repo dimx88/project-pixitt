@@ -14,12 +14,12 @@ export default function GalleryDisplay({ documents }) {
             {documents.map((doc) => (
                 <div className="gallery-item" key={doc.id}>
                     
-                    <h3>{doc.canvasTitle}</h3>
+                    <h3>{doc.drawingTitle}</h3>
 
-                    <img src={doc.canvasImgURL}
+                    <img src={doc.drawingImgURL}
                         className="image"
-                        alt={`${doc.canvasTitle} Image`}
-                        onClick={() => nav(`/canvas/${doc.id}`)}
+                        alt={`${doc.drawingTitle} Image`}
+                        onClick={() => nav(`/drawing/${doc.id}`)}
                     />
 
                     <p>By <strong><Link>{doc.createdBy}</Link></strong> </p>

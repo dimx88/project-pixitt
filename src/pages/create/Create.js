@@ -12,11 +12,11 @@ import './Create.css';
 
 
 export default function Create() {
-    const { addDocument, response } = useFirestore('canvases');
+    const { addDocument, response } = useFirestore('drawings');
 
-    const [canvasTitle, setCanvasTitle] = useState('');
-    const [canvasInfo, setCanvasInfo] = useState('');
-    const [canvasImgURL, setCanvasImgURL] = useState('');
+    const [drawingTitle, setDrawingTitle] = useState('');
+    const [drawingInfo, setDrawingInfo] = useState('');
+    const [drawingImgURL, setDrawingImgURL] = useState('');
 
     const { user } = useAuthContext();
 
@@ -25,7 +25,7 @@ export default function Create() {
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        await addDocument({canvasTitle, canvasInfo, canvasImgURL, uid:user.uid, createdBy:user.displayName});
+        await addDocument({drawingTitle, drawingInfo, drawingImgURL, uid:user.uid, createdBy:user.displayName});
         nav('/gallery');
     };
 
@@ -35,31 +35,31 @@ export default function Create() {
                 <form onSubmit={onSubmit}>
                     <h1>Create Test</h1>
                     <label>
-                        <span>Canvas Title</span>
+                        <span>Drawing Title</span>
                         <input type="text"
                             required
-                            onChange={(e) => setCanvasTitle(e.target.value)}
-                            value={canvasTitle}
+                            onChange={(e) => setDrawingTitle(e.target.value)}
+                            value={drawingTitle}
                         />
                     </label>
                     <label>
-                        <span>Canvas Info</span>
+                        <span>Drawing Info</span>
                         <input type="text"
                             required
-                            onChange={(e) => setCanvasInfo(e.target.value)}
-                            value={canvasInfo}
+                            onChange={(e) => setDrawingInfo(e.target.value)}
+                            value={drawingInfo}
                         />
                     </label>
                     <label>
-                        <span>(Canvas Image URL)</span>
+                        <span>(Drawing Image URL)</span>
                         <input type="text"
                             required
-                            onChange={(e) => setCanvasImgURL(e.target.value)}
-                            value={canvasImgURL}
+                            onChange={(e) => setDrawingImgURL(e.target.value)}
+                            value={drawingImgURL}
                         />
                     </label>
 
-                    {!response.isPending && <button className="btn" onClick={onSubmit}>Save Canvas</button>}
+                    {!response.isPending && <button className="btn" onClick={onSubmit}>Save Drawing</button>}
                     {response.isPending && <button className="btn" disabled>Saving...</button>}
                 </form>
             </div>

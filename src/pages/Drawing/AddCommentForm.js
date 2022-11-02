@@ -11,12 +11,12 @@ import { useNavigate } from 'react-router-dom';
 import './AddCommentForm.css';
 
 
-export default function AddCommentForm({ canvasID }) {
+export default function AddCommentForm({ drawingID }) {
 
     const { user } = useAuthContext();
     const [comment, setComment] = useState('');
 
-    const { addDocument, response } = useFirestore(`canvases/${canvasID}/comments`);
+    const { addDocument, response } = useFirestore(`drawings/${drawingID}/comments`);
 
 
     const onSubmit = (e) => {
