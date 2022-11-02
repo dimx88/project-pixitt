@@ -6,12 +6,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useDocument } from '../../hooks/useDocument';
 import AddCommentForm from './AddCommentForm';
 import DisplayComments from './DisplayComments';
+import { useAuthContext } from '../../hooks/useAuthContext';
 
 // Styles
 import './Canvas.css';
 
 export default function Canvas() {
+    const { user } = useAuthContext();
     const { id: canvasID } = useParams();
+    console.log(user);
 
 
     const { document, error } = useDocument('canvases', canvasID);
@@ -23,7 +26,7 @@ export default function Canvas() {
         <div className="canvas">
             <div className="container">
                 {document && <CanvasDetails canvas={document} className="canvas-details" />}
-                {document && <AddCommentForm canvasID={document.id} />}
+                {user && document && <AddCommentForm canvasID={document.id} />}
                 {document && <DisplayComments canvasID={document.id} />}
             </div>
         </div>
