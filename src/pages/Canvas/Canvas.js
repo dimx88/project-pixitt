@@ -15,7 +15,6 @@ import { useFirestore } from '../../hooks/useFirestore';    ///////////////
 import './Canvas.css';
 
 export default function Canvas() {
-    const {deleteDocument, updateDocument} = useFirestore(`canvases`);  /////////// 
 
     const { user } = useAuthContext();
     const { id: canvasID } = useParams();
@@ -29,13 +28,6 @@ export default function Canvas() {
     return (
         <div className="canvas">
             <div className="container">
-
-                {/* For testing - delete button */}
-                {document && <button className="btn" onClick={() => {
-                    deleteDocument(document.id);
-                    nav('/gallery');
-                    }}>-delete canvas-</button>}
-
 
                 {document && <CanvasDetails canvas={document} className="canvas-details" />}
                 {user && document && <AddCommentForm canvasID={document.id} />}
