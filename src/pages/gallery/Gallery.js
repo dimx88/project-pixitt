@@ -1,5 +1,5 @@
 // Components
-import GalleryDisplay from '../../components/GalleryDisplay';
+import GalleryDisplay from './GalleryDisplay';
 
 // Hooks
 import { useCollection } from '../../hooks/useCollection';
