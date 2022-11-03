@@ -7,6 +7,7 @@ import Login from "./pages/login/Login";
 import Signup from "./pages/signup/Signup";
 import Create from "./pages/create/Create";
 import Drawing from "./pages/Drawing/Drawing";
+import Canvas from "./pages/create/Canvas";
 
 // Hooks 
 import { useAuthContext } from "./hooks/useAuthContext";
@@ -37,7 +38,7 @@ function App() {
 
           <Route path="/signup" element={!user ? (<Signup />) : (<Navigate to='/' replace />)} />
 
-          <Route path="/create" element={user ? (<Create />) : (<Navigate to='/login' replace />)} />
+          <Route path="/create" element={user ? (<Canvas />) : (<Navigate to='/login' replace />)} />
 
           <Route path="*" element={<Navigate to='/' replace />} />
         </Routes>

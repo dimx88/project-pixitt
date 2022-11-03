@@ -10,6 +10,17 @@ import { useNavigate } from 'react-router-dom';
 // Styles
 import './Create.css';
 
+//-------------------------
+
+
+
+
+// THIS IS A TEST COMPONENT 
+
+
+
+//--------------------------
+
 
 export default function Create() {
     const { addDocument, response } = useFirestore('drawings');
@@ -28,6 +39,7 @@ export default function Create() {
         await addDocument({drawingTitle, drawingInfo, drawingImgURL, uid:user.uid, createdBy:user.displayName});
         nav('/gallery');
     };
+
 
     return (
         <div className="create">
