@@ -16,7 +16,11 @@ export default class Mouse {
         this._onMouseUp = this.onMouseUp.bind(this);
         this._onContextMenu = this.onContextMenu.bind(this);
 
-        // Add Listener
+        this.registerListeners();
+
+    }
+
+    registerListeners() {
         window.addEventListener('mousedown', this._onMouseDown);
         window.addEventListener('mouseup', this._onMouseUp);
         window.addEventListener('mousemove', this._onMouseMove);
@@ -25,19 +29,14 @@ export default class Mouse {
 
 
     follow(element) {
-        // Unfollow existing element if one exists
-        if (this.element) this.unfollow();
-
         this.element = element;
     }
 
-    unfollow() {
+    removeListeners() {
         window.removeEventListener('mousedown', this._onMouseDown);
         window.removeEventListener('mouseup', this._onMouseUp);
         window.removeEventListener('mousemove', this._onMouseMove);
         window.removeEventListener('contextmenu', this._onContextMenu);
-        this.resetButtons();
-        // console.log('mouse unfollowed');
     }
 
     resetButtons() {
@@ -47,42 +46,24 @@ export default class Mouse {
 
 
     onContextMenu(e) {
-        if (!this.element) {
-            this.unfollow();
-            return;
-        }
-        
         // if (this.preventDefault && e.target == this.element) e.preventDefault();
-        if (this.preventDefault) e.preventDefault()
+        if (this.preventDefault) e.preventDefault();
     }
 
     onMouseDown(e) {
-        if (!this.element) {
-            this.unfollow();
-            return;
-        }
-        
         if (this.preventDefault && e.target == this.element) e.preventDefault();
 
         this.setButtonState(e.button, true);
+        console.log('mouse mouse down')
     }
 
     onMouseUp(e) {
-        if (!this.element) {
-            this.unfollow();
-            return;
-        }
-
         this.setButtonState(e.button, false);
     }
 
     onMouseMove(e) {
-        if (!this.element) {
-            this.unfollow();
-            return;
-        }
+        const offset = this.element ? this.element.getBoundingClientRect() : { x: 0, y: 0 };
 
-        const offset = this.element.getBoundingClientRect();
         this.prevPos = { x: this.pos.x, y: this.pos.y };
         this.pos.x = e.clientX - offset.left;
         this.pos.y = e.clientY - offset.top;

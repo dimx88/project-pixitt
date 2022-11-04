@@ -8,6 +8,12 @@ import { downloadCanvas, downloadThumbnail } from '../../utils/downloadCanvas';
 import { useEffect, useRef, useState } from 'react';
 import './Canvas.css';
 
+// TEMP FOR TESTING
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { storage } from '../../firebase/config';
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
+
 export default function Canvas() {
     console.log('canvas component re-rendered');
     // Setup
@@ -22,6 +28,12 @@ export default function Canvas() {
     const pixels = new Array(dimensions.width * dimensions.height).fill(defaultBackgroundColor);
 
     const mouse = new Mouse(null, true);
+    window.onmousedown = (e) => {
+        // console.log('window mouse down');
+        if (e.button === 1) {
+            mouse.registerListeners();
+        }
+    }
 
     //-----------------------------------------------------
 
@@ -38,6 +50,7 @@ export default function Canvas() {
         window.addEventListener('mouseup', onMouseEvent);
         window.addEventListener('mousemove', onMouseEvent);
 
+
         render();
         // drawGrid();
 
@@ -46,24 +59,67 @@ export default function Canvas() {
             window.removeEventListener('mousedown', onMouseEvent);
             window.removeEventListener('mouseup', onMouseEvent);
             window.removeEventListener('mousemove', onMouseEvent);
+
         };
     }, []);
 
-    const onMouseEvent = (e) => {
-        executeCurrentState();
-    }
+
+
+
+
+
+
+
+
+
+    //----------------------------------------
+    //----------------------------------------
+    //              TEST  
+
+    const { user } = useAuthContext();
+
+
+
+    const uploadThumbnail = async (srcCanvas) => {
+
+        srcCanvas.toBlob((blob) => upload(blob));
+
+        const upload = async (blob) => {
+            const uploadPath = `thumbnails/${user.uid}/thumb.png`;
+            const storageRef = ref(storage, uploadPath);
+            const uploaded = await uploadBytes(storageRef, blob);
+            console.log(uploaded);
+            const imgURL = await getDownloadURL(storageRef);
+            console.log(imgURL);
+        }
+
+    };
+
+    // ------------------------------------------
+    // ------------------------------------------
+
+
+
+
+
+
+
+
 
 
 
 
     // State machine
     // ---------------------------------------
+    const onMouseEvent = (e) => {
+        executeCurrentState();
+    }
     const states = { IDLE: 'IDLE', DRAWING: 'DRAWING', FILLING: 'FILLING', COLOR_PICKING: 'COLOR_PICKING', LOCKED: 'LOCKED' };
     const state = { current: states.IDLE };
 
     const setState = (newState) => {
         state.current = newState;
-        console.log('set state to -> ' + newState);
+        // console.log('set state to -> ' + newState);
         executeCurrentState();
     }
 
@@ -205,7 +261,7 @@ export default function Canvas() {
     return (
         <>
             <div style={{ textAlign: 'center', border: '2px dashed red', width: 'fit-content', margin: 'auto' }}>
-                <p>TestZone</p>
+                <p>Test Zone</p>
                 <button onClick={() => downloadThumbnail(canvasRef.current)}>Download Thumbnail</button>
                 <button onClick={() => uploadThumbnail(canvasRef.current)}>Upload Thumbnail</button>
             </div>

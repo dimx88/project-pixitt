@@ -6,7 +6,7 @@ export function downloadThumbnail(srcCanvas, scale = 0.1) {
     thumbCanvas.remove();
 }
 
-function downloadCanvas(srcCanvas) {
+export function downloadCanvas(srcCanvas) {
     const link = document.createElement('a');
     link.setAttribute('id', 'link');
     link.setAttribute('download', 'canvasSnapshot.png');
