@@ -2,8 +2,8 @@ export default class Mouse {
 
     constructor(element = null, preventDefault = false) {
         this.pos = { x: 0, y: 0 };
-        // this.button = [false, false, false]; // Alternative data model
-        this.button = { left: false, middle: false, right: false };
+        this.prevPos = { x: 0, y: 0 };
+        this.button = { left: false, middle: false, right: false, '0': false, '1': false, '2': false };
         this.preventDefault = preventDefault;
 
         this.element = element && this.follow(element);
@@ -45,39 +45,38 @@ export default class Mouse {
     }
 
     resetButtons() {
-       for (let b in this.button) this.button[b] = false;
+        for (let b in this.button) this.button[b] = false;
     }
 
 
 
     onContextMenu(e) {
         if (this.preventDefault) e.preventDefault()
-    }   
+    }
 
     onMouseDown(e) {
         if (this.preventDefault) e.preventDefault();
 
         this.setButtonState(e.button, true);
-
     }
 
     onMouseUp(e) {
         this.setButtonState(e.button, false);
-
     }
 
     onMouseMove(e) {
         const offset = this.element.getBoundingClientRect();
+        this.prevPos = { x: this.pos.x, y: this.pos.y };
         this.pos.x = e.clientX - offset.left;
         this.pos.y = e.clientY - offset.top;
 
-        // console.log(this.pos);
     }
 
     setButtonState(button, isDown) {
         this.button.left = (button === 0 && isDown) || (this.button.left && button !== 0);
         this.button.middle = (button === 1 && isDown) || (this.button.middle && button !== 1);
         this.button.right = (button === 2 && isDown) || (this.button.right && button !== 2);
+        this.button[button] = isDown;
 
         //console.log(this.button);
     }
