@@ -16,7 +16,7 @@ export function downloadCanvas(srcCanvas) {
     link.remove();
 }
 
-export function createThumbnailCanvas(srcCanvas, scale) {
+export function createThumbnailCanvas(srcCanvas, scale = 0.1) {
     const width = srcCanvas.width * scale;
     const height = srcCanvas.height * scale;
 

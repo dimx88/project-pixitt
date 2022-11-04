@@ -2,7 +2,7 @@
 // Utils
 import Mouse from '../../utils/mouse';
 import getLineBetween from '../../utils/getLine';
-import { downloadCanvas, downloadThumbnail } from '../../utils/downloadCanvas';
+import { createThumbnailCanvas, downloadCanvas, downloadThumbnail } from '../../utils/downloadCanvas';
 
 //  Styles
 import { useEffect, useRef, useState } from 'react';
@@ -14,7 +14,7 @@ import { storage } from '../../firebase/config';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 
-export default function Canvas() {
+export default function Canvas({setCanvasRef}) {
     console.log('canvas component re-rendered');
     // Setup
     //-----------------------------------------------------
@@ -27,17 +27,18 @@ export default function Canvas() {
     const pixelSize = 10;
     const pixels = new Array(dimensions.width * dimensions.height).fill(defaultBackgroundColor);
 
+    // const randomHexColor = () => '#' + Math.floor(Math.random() * 16777215).toString(16);
+    // const pixels = new Array(dimensions.width * dimensions.height).fill('').map(() => randomHexColor());
+
+
     const mouse = new Mouse(null, true);
-    window.onmousedown = (e) => {
-        // console.log('window mouse down');
-        if (e.button === 1) {
-            mouse.registerListeners();
-        }
-    }
+
 
     //-----------------------------------------------------
 
     useEffect(() => {
+        setCanvasRef(canvasRef.current);
+
         const canvas = canvasRef.current;
         contextRef.current = canvas.getContext('2d');
 
@@ -59,7 +60,7 @@ export default function Canvas() {
             window.removeEventListener('mousedown', onMouseEvent);
             window.removeEventListener('mouseup', onMouseEvent);
             window.removeEventListener('mousemove', onMouseEvent);
-
+            mouse.removeListeners();
         };
     }, []);
 
@@ -76,24 +77,26 @@ export default function Canvas() {
     //----------------------------------------
     //              TEST  
 
-    const { user } = useAuthContext();
+    // const { user } = useAuthContext();
 
 
 
-    const uploadThumbnail = async (srcCanvas) => {
+    // const uploadThumbnail = async (srcCanvas) => {
+    //     const thumbCanvas = await createThumbnailCanvas(srcCanvas, 0.2);
+    //     thumbCanvas.toBlob((blob) => upload(blob));
 
-        srcCanvas.toBlob((blob) => upload(blob));
+    //     const upload = async (blob) => {
+    //         const uploadPath = `thumbnails/${user.uid}/thumb.png`;
+    //         const storageRef = ref(storage, uploadPath);
+    //         const uploaded = await uploadBytes(storageRef, blob);
+    //         console.log(uploaded);
+    //         const imgURL = await getDownloadURL(storageRef);
+    //         console.log(imgURL);
 
-        const upload = async (blob) => {
-            const uploadPath = `thumbnails/${user.uid}/thumb.png`;
-            const storageRef = ref(storage, uploadPath);
-            const uploaded = await uploadBytes(storageRef, blob);
-            console.log(uploaded);
-            const imgURL = await getDownloadURL(storageRef);
-            console.log(imgURL);
-        }
+    //         thumbCanvas.remove();
+    //     }
 
-    };
+    // };
 
     // ------------------------------------------
     // ------------------------------------------
@@ -260,11 +263,11 @@ export default function Canvas() {
 
     return (
         <>
-            <div style={{ textAlign: 'center', border: '2px dashed red', width: 'fit-content', margin: 'auto' }}>
+            {/* <div style={{ textAlign: 'center', border: '2px dashed red', width: 'fit-content', margin: 'auto' }}>
                 <p>Test Zone</p>
                 <button onClick={() => downloadThumbnail(canvasRef.current)}>Download Thumbnail</button>
                 <button onClick={() => uploadThumbnail(canvasRef.current)}>Upload Thumbnail</button>
-            </div>
+            </div> */}
 
             <canvas
                 className="canvas"

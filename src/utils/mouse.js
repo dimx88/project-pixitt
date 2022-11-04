@@ -46,15 +46,14 @@ export default class Mouse {
 
 
     onContextMenu(e) {
-        // if (this.preventDefault && e.target == this.element) e.preventDefault();
-        if (this.preventDefault) e.preventDefault();
+        if (this.preventDefault && e.target == this.element) e.preventDefault();
+        // if (this.preventDefault) e.preventDefault();
     }
 
     onMouseDown(e) {
         if (this.preventDefault && e.target == this.element) e.preventDefault();
 
         this.setButtonState(e.button, true);
-        console.log('mouse mouse down')
     }
 
     onMouseUp(e) {

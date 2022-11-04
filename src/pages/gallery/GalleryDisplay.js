@@ -16,7 +16,7 @@ export default function GalleryDisplay({ documents }) {
                     
                     <h3>{doc.drawingTitle}</h3>
 
-                    <img src={doc.drawingImgURL}
+                    <img src={doc.thumbnailURL}
                         className="image"
                         alt={`${doc.drawingTitle} Image`}
                         onClick={() => nav(`/drawing/${doc.id}`)}
