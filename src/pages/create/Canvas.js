@@ -31,9 +31,39 @@ export default function Canvas() {
 
         mouse.follow(canvas, true);
 
-        drawGrid();
+        render();
+        // drawGrid();
 
     }, []);
+
+    document.onkeydown = function (e) {
+        const thumbCanvas = createThumbnailCanvas(canvasRef.current);
+        if (e.code === 'KeyS') downloadCanvas(thumbCanvas);
+        thumbCanvas.remove();
+    }
+
+    function downloadCanvas(srcCanvas) {
+        const link = document.createElement('a');
+        link.setAttribute('id', 'link');
+        link.setAttribute('download', 'canvasSnapshot.png');
+        // link.setAttribute('href', srcCanvas.toDataURL("image/png").replace("image/png", "image/octet-stream"));  // Seems to work the same without replace
+        link.setAttribute('href', srcCanvas.toDataURL("image/png"));
+        link.click();
+        link.remove();
+    }
+
+    const createThumbnailCanvas = (srcCanvas) => {
+        const scale = 0.1;
+        const width = srcCanvas.width * scale;
+        const height = srcCanvas.height * scale;
+
+        const thumbCanvas = document.createElement('canvas');
+        thumbCanvas.setAttribute('width', width);
+        thumbCanvas.setAttribute('height', height);
+        const thumbCtx = thumbCanvas.getContext('2d');
+        thumbCtx.drawImage(srcCanvas, 0, 0, width, height);
+        return thumbCanvas;
+    }
 
     // State machine
     // ---------------------------------------
@@ -87,7 +117,7 @@ export default function Canvas() {
         const pos = screenToPixelCoords(mouse.pos.x, mouse.pos.y);
         const prevPos = screenToPixelCoords(mouse.prevPos.x, mouse.prevPos.y);
 
-        drawLine({ x: pos.col, y: pos.row }, { x: prevPos.col, y: prevPos.row });
+        drawLine(prevPos, pos);
     }
 
 
@@ -109,8 +139,9 @@ export default function Canvas() {
     }
 
     const screenToPixelCoords = (x, y) => {
-        return { col: ~~(x / pixelSize), row: ~~(y / pixelSize) };
+        return { x: ~~(x / pixelSize), y: ~~(y / pixelSize) };
     }
+
 
     const drawLine = (point1, point2) => {
         const line = getLineBetween(point1, point2);
@@ -121,26 +152,25 @@ export default function Canvas() {
         }
     }
 
-    const setPixel = (col, row, color) => {
-        pixels[col + row * dimensions.width] = color;
-        // console.log(`set pixel ${col}, ${row} to ${color}`)
+    const fill = (x, y) => {
+
     }
 
-    const getPixel = (col, row) => {
-        return pixels[col + row * dimensions.width];
+    const setPixel = (x, y, color) => {
+        pixels[x + y * dimensions.width] = color;
+        // console.log(`set pixel ${x}, ${y} to ${color}`)
+    }
+
+    const getPixel = (x, y) => {
+        return pixels[x + y * dimensions.width];
     }
 
 
-    const renderPixel = (col, row) => {
+    const renderPixel = (x, y) => {
         const ctx = contextRef.current;
 
-        // ctx.fillStyle = getPixel(x, y);
-        ctx.fillStyle = '#000000';
-        ctx.fillRect(col * pixelSize, row * pixelSize, pixelSize, pixelSize);
-
-    }
-
-    const fill = (cow, row) => {
+        ctx.fillStyle = getPixel(x, y);
+        ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
 
     }
 
@@ -148,8 +178,11 @@ export default function Canvas() {
         const canvas = canvasRef.current;
         const ctx = contextRef.current;
 
-        for (let pixel of pixels) {
-            // ctx.clear(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < pixels.length; i++) {
+            const x = i % dimensions.width;
+            const y = ~~(i / dimensions.width);
+            renderPixel(x, y);
         }
     }
 
@@ -166,7 +199,15 @@ export default function Canvas() {
 
     // ---------------------------------------------
 
-
+    document.onmousedown = function(e) {
+        executeCurrentState();
+    }
+    document.onmouseup = function(e) {
+        executeCurrentState();
+    }
+    document.onmousemove = function(e) {
+        executeCurrentState();
+    }
 
 
 
@@ -177,9 +218,13 @@ export default function Canvas() {
             ref={canvasRef}
             width={dimensions.width * pixelSize}
             height={dimensions.height * pixelSize}
-            onMouseDown={executeCurrentState}
-            onMouseUp={executeCurrentState}
-            onMouseMove={executeCurrentState}
-        />
+            // onMouseDown={executeCurrentState}
+            // onMouseUp={executeCurrentState}
+            // onMouseMove={executeCurrentState}
+            // onMouseLeave={(e) => {
+            //     mouse.resetButtons();
+            //     setState(states.IDLE);
+            // }}
+        />  
     );
 }
