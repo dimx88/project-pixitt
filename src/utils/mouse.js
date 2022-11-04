@@ -7,45 +7,35 @@ export default class Mouse {
         this.leftElementBounds = false;
         this.preventDefault = preventDefault;
 
-        this.element = element && this.follow(element);
+        this.element = element;
 
 
         // Commit listener bindings here so that it's possible to remove them later via removeEventListener
         this._onMouseMove = this.onMouseMove.bind(this);
         this._onMouseDown = this.onMouseDown.bind(this);
         this._onMouseUp = this.onMouseUp.bind(this);
-        this._onMouseEnter = this.onMouseEnter.bind(this);
-        this._onMouseLeave = this.onMouseLeave.bind(this);
         this._onContextMenu = this.onContextMenu.bind(this);
 
+        // Add Listener
+        window.addEventListener('mousedown', this._onMouseDown);
+        window.addEventListener('mouseup', this._onMouseUp);
+        window.addEventListener('mousemove', this._onMouseMove);
+        window.addEventListener('contextmenu', this._onContextMenu);
     }
 
 
     follow(element) {
-        // if same element return, no need to re-follow
-        if (this.element === element) return;
-
         // Unfollow existing element if one exists
         if (this.element) this.unfollow();
 
-        element.addEventListener('mousedown', this._onMouseDown);
-        element.addEventListener('mouseup', this._onMouseUp);
-        element.addEventListener('mousemove', this._onMouseMove);
-        element.addEventListener('mouseenter', this._onMouseEnter);
-        element.addEventListener('mouseleave', this._onMouseLeave);
-        element.addEventListener('contextmenu', this._onContextMenu);
         this.element = element;
-
-        // console.log('mouse following ' + element.id)
-        return element;
     }
 
     unfollow() {
-        const element = this.element;
-        element.removeEventListener('mousedown', this._onMouseDown);
-        element.removeEventListener('mouseup', this._onMouseUp);
-        element.removeEventListener('mousemove', this._onMouseMove);
-        element.removeEventListener('contextmenu', this._onContextMenu);
+        window.removeEventListener('mousedown', this._onMouseDown);
+        window.removeEventListener('mouseup', this._onMouseUp);
+        window.removeEventListener('mousemove', this._onMouseMove);
+        window.removeEventListener('contextmenu', this._onContextMenu);
         this.resetButtons();
         // console.log('mouse unfollowed');
     }
@@ -57,56 +47,47 @@ export default class Mouse {
 
 
     onContextMenu(e) {
+        if (!this.element) {
+            this.unfollow();
+            return;
+        }
+        
+        // if (this.preventDefault && e.target == this.element) e.preventDefault();
         if (this.preventDefault) e.preventDefault()
     }
 
     onMouseDown(e) {
-        if (this.preventDefault) e.preventDefault();
+        if (!this.element) {
+            this.unfollow();
+            return;
+        }
+        
+        if (this.preventDefault && e.target == this.element) e.preventDefault();
 
         this.setButtonState(e.button, true);
     }
 
     onMouseUp(e) {
+        if (!this.element) {
+            this.unfollow();
+            return;
+        }
+
         this.setButtonState(e.button, false);
     }
 
     onMouseMove(e) {
+        if (!this.element) {
+            this.unfollow();
+            return;
+        }
+
         const offset = this.element.getBoundingClientRect();
         this.prevPos = { x: this.pos.x, y: this.pos.y };
         this.pos.x = e.clientX - offset.left;
         this.pos.y = e.clientY - offset.top;
-
-        this.resetPosIfLeftElementBounds()
-
-        if (e.target !== this.element) console.log('left canvas')
     }
 
-    resetPosIfLeftElementBounds() {
-        if (this.leftElementBounds) {
-            this.prevPos = { x: this.pos.x, y: this.pos.y };
-            this.leftElementBounds = false;
-        }
-    }
-
-    onMouseLeave(e) {
-        this.leftElementBounds = true;
-        // console.log('mouse left element');
-        // this.prevPos = {x: this.pos.x, y: this.pos.y};
-        // console.log('prev');
-        // console.log(this.prevPos);
-        // console.log('pos');
-        // console.log(this.pos);
-        // this.prevPos = {x: 0, y: 0};
-    }
-
-    onMouseEnter(e) {
-        // this.prevPos = {x: this.pos.x, y: this.pos.y};
-        // console.log('prev');
-        // console.log(this.prevPos);
-        // console.log('pos');
-        // console.log(this.pos);
-        // this.prevPos = {x: 0, y: 0};
-    }
 
     setButtonState(button, isDown) {
         this.button.left = (button === 0 && isDown) || (this.button.left && button !== 0);
@@ -114,6 +95,5 @@ export default class Mouse {
         this.button.right = (button === 2 && isDown) || (this.button.right && button !== 2);
         this.button[button] = isDown;
 
-        //console.log(this.button);
     }
 }

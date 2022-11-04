@@ -2,6 +2,7 @@
 // Utils
 import Mouse from '../../utils/mouse';
 import getLineBetween from '../../utils/getLine';
+import { downloadCanvas, downloadThumbnail } from '../../utils/downloadCanvas';
 
 //  Styles
 import { useEffect, useRef, useState } from 'react';
@@ -27,43 +28,33 @@ export default function Canvas() {
     useEffect(() => {
         const canvas = canvasRef.current;
         contextRef.current = canvas.getContext('2d');
-        const ctx = contextRef.current;
 
         mouse.follow(canvas, true);
+
+
+
+        // Add listener
+        window.addEventListener('mousedown', onMouseEvent);
+        window.addEventListener('mouseup', onMouseEvent);
+        window.addEventListener('mousemove', onMouseEvent);
 
         render();
         // drawGrid();
 
+        // Cleanup function
+        return () => {
+            window.removeEventListener('mousedown', onMouseEvent);
+            window.removeEventListener('mouseup', onMouseEvent);
+            window.removeEventListener('mousemove', onMouseEvent);
+        };
     }, []);
 
-    document.onkeydown = function (e) {
-        const thumbCanvas = createThumbnailCanvas(canvasRef.current);
-        if (e.code === 'KeyS') downloadCanvas(thumbCanvas);
-        thumbCanvas.remove();
+    const onMouseEvent = (e) => {
+        executeCurrentState();
     }
 
-    function downloadCanvas(srcCanvas) {
-        const link = document.createElement('a');
-        link.setAttribute('id', 'link');
-        link.setAttribute('download', 'canvasSnapshot.png');
-        // link.setAttribute('href', srcCanvas.toDataURL("image/png").replace("image/png", "image/octet-stream"));  // Seems to work the same without replace
-        link.setAttribute('href', srcCanvas.toDataURL("image/png"));
-        link.click();
-        link.remove();
-    }
 
-    const createThumbnailCanvas = (srcCanvas) => {
-        const scale = 0.1;
-        const width = srcCanvas.width * scale;
-        const height = srcCanvas.height * scale;
 
-        const thumbCanvas = document.createElement('canvas');
-        thumbCanvas.setAttribute('width', width);
-        thumbCanvas.setAttribute('height', height);
-        const thumbCtx = thumbCanvas.getContext('2d');
-        thumbCtx.drawImage(srcCanvas, 0, 0, width, height);
-        return thumbCanvas;
-    }
 
     // State machine
     // ---------------------------------------
@@ -199,32 +190,33 @@ export default function Canvas() {
 
     // ---------------------------------------------
 
-    document.onmousedown = function(e) {
-        executeCurrentState();
-    }
-    document.onmouseup = function(e) {
-        executeCurrentState();
-    }
-    document.onmousemove = function(e) {
-        executeCurrentState();
-    }
+    // document.onmousedown = function(e) {
+    //     executeCurrentState();
+    // }
+    // document.onmouseup = function(e) {
+    //     executeCurrentState();
+    // }
+    // document.onmousemove = function(e) {
+    //     executeCurrentState();
+    // }
 
 
 
     return (
-        <canvas
-            className="canvas"
-            id="canvas"
-            ref={canvasRef}
-            width={dimensions.width * pixelSize}
-            height={dimensions.height * pixelSize}
-            // onMouseDown={executeCurrentState}
-            // onMouseUp={executeCurrentState}
-            // onMouseMove={executeCurrentState}
-            // onMouseLeave={(e) => {
-            //     mouse.resetButtons();
-            //     setState(states.IDLE);
-            // }}
-        />  
+        <>
+            <div style={{ textAlign: 'center', border: '2px dashed red', width: 'fit-content', margin: 'auto' }}>
+                <p>TestZone</p>
+                <button onClick={() => downloadThumbnail(canvasRef.current)}>Download Thumbnail</button>
+                <button onClick={() => uploadThumbnail(canvasRef.current)}>Upload Thumbnail</button>
+            </div>
+
+            <canvas
+                className="canvas"
+                id="canvas"
+                ref={canvasRef}
+                width={dimensions.width * pixelSize}
+                height={dimensions.height * pixelSize}
+            />
+        </>
     );
 }
