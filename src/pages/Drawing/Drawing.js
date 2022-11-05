@@ -31,7 +31,7 @@ export default function Drawing() {
 
                 {document && <DrawingDetails drawing={document} className="drawing-details" />}
                 {user && document && <AddCommentForm drawingID={document.id} />}
-                {document && <DisplayComments drawingID={document.id} />}
+                {document && <DisplayComments drawingID={document.id} uid={user.uid}/>}
 
             </div>
         </div>
