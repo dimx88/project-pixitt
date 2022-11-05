@@ -1,10 +1,7 @@
 // Hooks
-import { useEffect, useRef, useState } from 'react';
-import { useFirestore } from '../../hooks/useFirestore';
+import { useState } from 'react';
 import { useAuthContext } from '../../hooks/useAuthContext';
 
-import { storage } from '../../firebase/config';
-import { uploadBytes, getDownloadURL, ref } from 'firebase/storage';
 
 // Componenets
 import Canvas from './Canvas';
@@ -12,43 +9,28 @@ import Canvas from './Canvas';
 
 import { useNavigate } from 'react-router-dom';
 
-// Utils
-import { createThumbnailCanvas } from '../../utils/downloadCanvas';
-
-
 // Styles
 import './Create.css';
 import { useUploadDrawing } from '../../hooks/useUploadDrawing';
 
-//-------------------------
 
-
-
-
+//--------------------------
 // THIS IS A TEST COMPONENT 
 
 
 
-//--------------------------
-
 
 export default function Create() {
-    const { addDocument, updateDocument, response } = useFirestore('drawings');
 
     const [drawingTitle, setDrawingTitle] = useState('');
     const [drawingInfo, setDrawingInfo] = useState('');
+    const [canvasRef, setCanvasRef] = useState(null);
 
     const { user } = useAuthContext();
-
     const nav = useNavigate();
-
-    const [canvasRef, setCanvasRef] = useState(null);
 
     const { uploadDrawing, isPending } = useUploadDrawing('drawings');
 
-
-
-    
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -85,8 +67,8 @@ export default function Create() {
                         />
                     </label>
 
-                    {!response.isPending && <button className="btn" onClick={onSubmit}>Save Drawing</button>}
-                    {response.isPending && <button className="btn" disabled>Saving...</button>}
+                    {!isPending && <button className="btn" onClick={onSubmit}>Save Drawing</button>}
+                    {isPending && <button className="btn" disabled>Saving...</button>}
                 </form>
             </div>
 
