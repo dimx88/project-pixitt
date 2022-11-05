@@ -14,7 +14,7 @@ import { storage } from '../../firebase/config';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 
-export default function Canvas({setCanvasRef}) {
+export default function Canvas({ setCanvasRef }) {
     console.log('canvas component re-rendered');
     // Setup
     //-----------------------------------------------------
@@ -23,7 +23,7 @@ export default function Canvas({setCanvasRef}) {
     const contextRef = useRef(null);
 
     const dimensions = { width: 126, height: 80 };
-    const defaultBackgroundColor = '#ffffff';
+    const defaultBackgroundColor = '#eeeeee';
     const pixelSize = 10;
     const pixels = new Array(dimensions.width * dimensions.height).fill(defaultBackgroundColor);
 
@@ -63,49 +63,6 @@ export default function Canvas({setCanvasRef}) {
             mouse.removeListeners();
         };
     }, []);
-
-
-
-
-
-
-
-
-
-
-    //----------------------------------------
-    //----------------------------------------
-    //              TEST  
-
-    // const { user } = useAuthContext();
-
-
-
-    // const uploadThumbnail = async (srcCanvas) => {
-    //     const thumbCanvas = await createThumbnailCanvas(srcCanvas, 0.2);
-    //     thumbCanvas.toBlob((blob) => upload(blob));
-
-    //     const upload = async (blob) => {
-    //         const uploadPath = `thumbnails/${user.uid}/thumb.png`;
-    //         const storageRef = ref(storage, uploadPath);
-    //         const uploaded = await uploadBytes(storageRef, blob);
-    //         console.log(uploaded);
-    //         const imgURL = await getDownloadURL(storageRef);
-    //         console.log(imgURL);
-
-    //         thumbCanvas.remove();
-    //     }
-
-    // };
-
-    // ------------------------------------------
-    // ------------------------------------------
-
-
-
-
-
-
 
 
 
@@ -247,18 +204,6 @@ export default function Canvas({setCanvasRef}) {
 
     }
 
-    // ---------------------------------------------
-
-    // document.onmousedown = function(e) {
-    //     executeCurrentState();
-    // }
-    // document.onmouseup = function(e) {
-    //     executeCurrentState();
-    // }
-    // document.onmousemove = function(e) {
-    //     executeCurrentState();
-    // }
-
 
 
     return (
@@ -268,14 +213,17 @@ export default function Canvas({setCanvasRef}) {
                 <button onClick={() => downloadThumbnail(canvasRef.current)}>Download Thumbnail</button>
                 <button onClick={() => uploadThumbnail(canvasRef.current)}>Upload Thumbnail</button>
             </div> */}
+            <div className="canvas-wrapper">
 
-            <canvas
-                className="canvas"
-                id="canvas"
-                ref={canvasRef}
-                width={dimensions.width * pixelSize}
-                height={dimensions.height * pixelSize}
-            />
+                <canvas
+                    className="canvas"
+                    id="canvas"
+                    ref={canvasRef}
+                    width={dimensions.width * pixelSize}
+                    height={dimensions.height * pixelSize}
+                />
+
+            </div>
         </>
     );
 }

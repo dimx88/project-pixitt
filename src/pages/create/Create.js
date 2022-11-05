@@ -18,6 +18,7 @@ import { createThumbnailCanvas } from '../../utils/downloadCanvas';
 
 // Styles
 import './Create.css';
+import { useUploadDrawing } from '../../hooks/useUploadDrawing';
 
 //-------------------------
 
@@ -43,45 +44,23 @@ export default function Create() {
 
     const [canvasRef, setCanvasRef] = useState(null);
 
+    const { uploadDrawing, isPending } = useUploadDrawing('drawings');
 
+
+
+    
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        // Upload the doc and get it's unique ID
-        const docID = await submitDoc();
 
-        // Create thumbnail image
-        const thumbCanvas = createThumbnailCanvas(canvasRef, 0.2);
-        thumbCanvas.toBlob((blob) => upload(blob));
+        const drawingData = { drawingTitle, drawingInfo, thumbnailURL: '', uid: user.uid, createdBy: user.displayName };
 
-        // Upload thumbnail image
-        const upload = async (blob) => {
-            const uploadPath = `thumbnails/${user.uid}/thumb_${docID}.png`;
-            const storageRef = ref(storage, uploadPath);
-            const uploaded = await uploadBytes(storageRef, blob);
-            console.log(uploaded);
-            const imgURL = await getDownloadURL(storageRef);
-            console.log(imgURL);
+        await uploadDrawing(drawingData, canvasRef);
 
-            thumbCanvas.remove();
+        nav('/gallery');
 
-            // Update the image link in the doc
-            await updateDocument(docID, { thumbnailURL: imgURL })
-            console.log('updated image url');
-            // Return to gallery
-            nav('/gallery');
-
-        }
-    };
-
-    const submitDoc = async () => {
-        const addedDocument = await addDocument({ drawingTitle, drawingInfo, thumbnailURL: '', uid: user.uid, createdBy: user.displayName });
-        console.log('added document. id = ' + addedDocument.id);
-        return addedDocument.id;
     }
-
-
-
+    
 
     return (
         <div className="create">
