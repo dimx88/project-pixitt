@@ -3,20 +3,18 @@ import { useState } from 'react';
 import { useAuthContext } from '../../hooks/useAuthContext';
 
 
-// Componenets
-import Canvas from './Canvas';
-
 
 import { useNavigate } from 'react-router-dom';
 
+
 // Styles
-import './Create.css';
-import { useUploadDrawing } from '../../hooks/useUploadDrawing';
+import './SaveDrawingForm.css';
 
 
 
 
-export default function Create() {
+
+export default function SaveDrawingForm() {
 
     const [drawingTitle, setDrawingTitle] = useState('');
     const [drawingInfo, setDrawingInfo] = useState('');
@@ -41,8 +39,7 @@ export default function Create() {
     
 
     return (
-        <div className="create">
-            <Canvas setCanvasRef={setCanvasRef} />
+        <div className="save-drawing">
             <div className="container">
                 <form onSubmit={onSubmit}>
                     <h1>Create Test</h1>
