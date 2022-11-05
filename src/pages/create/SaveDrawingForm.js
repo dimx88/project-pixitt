@@ -31,14 +31,13 @@ export default function SaveDrawingForm({ canvasRef }) {
 
         const drawingData = { drawingTitle, drawingInfo, thumbnailURL: '', uid: user.uid, createdBy: user.displayName };
 
-        await uploadDrawing(drawingData, canvasRef);
+        await uploadDrawing(drawingData, canvasRef, 1);
 
         nav('/gallery');
 
     }
 
     const loseFocus = (el) => {
-
         document.activeElement.blur();
     }
 

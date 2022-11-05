@@ -15,6 +15,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 
 export default function Canvas({ setCanvasRef }) {
+
     console.log('canvas component re-rendered');
     // Setup
     //-----------------------------------------------------
@@ -24,7 +25,7 @@ export default function Canvas({ setCanvasRef }) {
 
     // const dimensions = { width: 126, height: 80 };
     const dimensions = { width: 96, height: 64 };
-    const pixelSize = 10;
+    const pixelSize = 12;
     const defaultBackgroundColor = '#eeeeee';
     const pixels = new Array(dimensions.width * dimensions.height).fill(defaultBackgroundColor);
 
@@ -79,7 +80,7 @@ export default function Canvas({ setCanvasRef }) {
 
     const setState = (newState) => {
         state.current = newState;
-        // console.log('set state to -> ' + newState);
+        console.log('set state to -> ' + newState);
         executeCurrentState();
     }
 
@@ -108,6 +109,11 @@ export default function Canvas({ setCanvasRef }) {
             setState(states.DRAWING);
             return;
         }
+
+        if (mouse.button[2] && !mouse.button[0] && !mouse.button[1]) {
+            setState(states.FILLING);
+            return;
+        }
     }
 
     const executeState_DRAWING = () => {
@@ -124,13 +130,22 @@ export default function Canvas({ setCanvasRef }) {
         const pos = screenToPixelCoords(mouse.pos.x, mouse.pos.y);
         const prevPos = screenToPixelCoords(mouse.prevPos.x, mouse.prevPos.y);
 
-        drawLine(prevPos, pos);
+        if (isWithinBounds(pos.x, pos.y) && isWithinBounds(prevPos.x, prevPos.y))
+            drawLine(prevPos, pos);
     }
 
 
 
     const executeState_FILLING = () => {
+        if (!mouse.button[0] && !mouse.button[1] && !mouse.button[2]) {
+            const pos = screenToPixelCoords(mouse.pos.x, mouse.pos.y);
+        if (!isWithinBounds(pos.x, pos.y)) return;
 
+            floodFill(pos.x, pos.y);
+            setState(states.IDLE);
+            render();
+            return;
+        }
     }
 
     const executeState_COLOR_PICKING = () => {
@@ -152,6 +167,8 @@ export default function Canvas({ setCanvasRef }) {
     //--------------------------------
 
     const screenToPixelCoords = (x, y) => {
+        // console.log(`mouse pos ${x}, ${y}`); 
+        // console.log(`pixel pos ${~~(x / pixelSize)}, ${~~(y / pixelSize)}`);
         return { x: ~~(x / pixelSize), y: ~~(y / pixelSize) };
     }
 
@@ -160,18 +177,52 @@ export default function Canvas({ setCanvasRef }) {
         const line = getLineBetween(point1, point2);
 
         for (let point of line) {
-            setPixel(point.x, point.y, '#000000');
+            setPixel(point.x, point.y, window.activeColor);
             renderPixel(point.x, point.y);
         }
     }
 
-    const fill = (x, y) => {
+    const floodFill = (x, y) => {
 
+        const oldColor = getPixel(x, y);
+        const fillColor = window.activeColor;
+
+        if (oldColor === fillColor) return;
+
+        const queue = [];
+
+        queue.push({ x, y });
+
+        while (queue.length > 0) {
+            const currentPixel = queue.pop();
+
+            if (!isWithinBounds(currentPixel.x, currentPixel.y)) continue;
+
+            if (getPixel(currentPixel.x, currentPixel.y) === oldColor) {
+                setPixel(currentPixel.x, currentPixel.y, fillColor);
+            }
+
+            for (let neighbor of getNeighbors(currentPixel.x, currentPixel.y)) {
+                if (getPixel(neighbor.x, neighbor.y) === oldColor)
+                    queue.push(neighbor);
+            }
+        }
+    }
+
+    const isWithinBounds = (x, y) => {
+        return (x >= 0 && x < dimensions.width && y >= 0 && y < dimensions.height);
+    }
+
+    const getNeighbors = (x, y) => {
+        const neighborLeft = { x: x - 1, y: y };
+        const neighborRight = { x: x + 1, y: y };
+        const neighborUp = { x: x, y: y - 1 };
+        const neighborDown = { x: x, y: y + 1 };
+        return [neighborLeft, neighborRight, neighborDown, neighborUp];
     }
 
     const setPixel = (x, y, color) => {
         pixels[x + y * dimensions.width] = color;
-        // console.log(`set pixel ${x}, ${y} to ${color}`)
     }
 
     const getPixel = (x, y) => {
@@ -197,7 +248,11 @@ export default function Canvas({ setCanvasRef }) {
             const y = ~~(i / dimensions.width);
             renderPixel(x, y);
         }
+
+        console.log('re-rendered pixels');
+        console.log('...');
     }
+
 
     function drawGrid() {
         const canvas = canvasRef.current;
@@ -209,7 +264,6 @@ export default function Canvas({ setCanvasRef }) {
                 ctx.strokeRect(x, y, pixelSize, pixelSize);
 
     }
-
 
 
     return (

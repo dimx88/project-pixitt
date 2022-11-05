@@ -1,13 +1,13 @@
 import ColorCycler from "./colorCycler";
 
-// Very old and messy code alert
+// Alert! Very old and messy code
 
-export default class Palette {
-    constructor(canvas, global=window) {
+export default class PaletteGen {
+    constructor(canvasRef, global=window) {
 
-        this.canvas = canvas;
+        this.canvas = canvasRef;
         this.global = global;
-        this.ctx = canvas.getContext("2d");
+        this.ctx = this.canvas.getContext("2d");
 
         this.colorCycler = new ColorCycler(0, 100, 50, -14, 0, 0);
         this.colorCycler2 = new ColorCycler(0, 0, 0, 0, 0, 1.3);
@@ -46,19 +46,41 @@ export default class Palette {
         this._onMouseDown = this.onMouseDown.bind(this);
         this._onMouseUp = this.onMouseUp.bind(this);
         this._onMouseMove = this.onMouseMove.bind(this);
-        this._onMouseWheel = this.onMouseWheel.bind(this);
+        this._onContextMenu = this.onContextMenu.bind(this);
+        // this._onMouseWheel = this.onMouseWheel.bind(this);
 
-        window.addEventListener('mousedown', this.onMouseDown);
-        window.addEventListener('mouseup', this.onMouseUp);
-        window.addEventListener('mousemove', this.onMouseMove);
-        window.addEventListener('mousewheel', this.onMouseWheel);
+        window.addEventListener('mousedown', this._onMouseDown);
+        window.addEventListener('mouseup', this._onMouseUp);
+        window.addEventListener('mousemove', this._onMouseMove);
+        window.addEventListener('contextmenu', this._onContextMenu);
+
+        // window.addEventListener('mousewheel', this._onMouseWheel);
 
         this.initialize();
-        this.global.selected_color = this.getColorAt(this.selected_col, this.selected_row);
-        // document.getElementById("colorDisplay").style.backgroundColor = this.global.selected_color;
+        this.updateDisplay();
+        
+        //----
+        this.global.activeColor = '#000000';
+        this.global.setActiveColor = (color) => {
+            this.global.activeColor = color;
+        }
 
+        this.global.setActiveColor(this.getColorAt(this.selected_col, this.selected_row));
+        //----
+    }
+
+   
+    //------------------------------------------------------------
+    removeListeners() {
+        window.removeEventListener('mousedown', this._onMouseDown);
+        window.removeEventListener('mouseup', this._onMouseUp);
+        window.removeEventListener('mousemove', this._onMouseMove);
+        // window.removeEventListener('mousewheel', this._onMouseWheel);
     }
     //-------------------------------------------------------------
+    onContextMenu(e) {
+        if (e.target === this.canvas) e.preventDefault();
+    }
     onMouseMove(e) {
         if (this.canvas != e.target) return;
         this.mouse_x = e.clientX - this.canvas.getBoundingClientRect().left;
@@ -107,17 +129,17 @@ export default class Palette {
 
         if (e.deltaY < 0) {           //up
             this.selected_row = this.selected_row > 0 ? this.selected_row - 1 : 0;
-            this.global.selected_color = this.getColorAt(this.selected_col, this.selected_row);
+            this.global.setActiveColor(this.getColorAt(this.selected_col, this.selected_row));
 
-            // document.getElementById("colorDisplay").style.backgroundColor = this.global.selected_color;
+         
             this.updateDisplay();
         }
 
         if (e.deltaY > 0) {           //down
             this.selected_row = this.selected_row < this.rows - 1 ? this.selected_row + 1 : this.rows - 1;
-            this.global.selected_color = this.getColorAt(this.selected_col, this.selected_row);
+            this.global.setActiveColor(this.getColorAt(this.selected_col, this.selected_row));
 
-            // document.getElementById("colorDisplay").style.backgroundColor = this.global.selected_color;
+     
             this.updateDisplay();
         }
     }
@@ -125,13 +147,7 @@ export default class Palette {
     selectColorAtCursor() {
         this.selected_col = Math.floor(this.mouse_x / this.cell_width);
         this.selected_row = Math.floor(this.mouse_y / this.cell_height);
-        this.global.selected_color = this.getColorAt(this.selected_col, this.selected_row);
-
-
-
-
-
-        // document.getElementById("colorDisplay").style.backgroundColor = this.global.selected_color;
+        this.global.setActiveColor(this.getColorAt(this.selected_col, this.selected_row));
 
     }
     //-------------------------------------------------------------
@@ -216,8 +232,8 @@ export default class Palette {
 
         this.palette_array[0][0] = this.palette_array[0][1] = null;
 
-
-    }
+        console.log('paletteGen init');
+    }   
 
     //--------------------------------------------------------------
     //--------------------------------------------------------------

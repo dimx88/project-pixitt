@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 // Componenets
 import Canvas from './Canvas';
 import SaveDrawingForm from './SaveDrawingForm';
+import Palette from './Palette';
 
 // Styles
 import './Create.css';
@@ -21,6 +22,7 @@ export default function Create() {
 
     return (
         <div className="drawing-app">
+            <Palette />
             <div className="canvas-saveform">
                 <Canvas setCanvasRef={setCanvasRef} />
                 <SaveDrawingForm canvasRef={canvasRef} />

@@ -18,7 +18,7 @@ export const useUploadDrawing = (collectionPath) => {
 
 
     // Upload drawing meta to collection 
-    const uploadDrawing = async (drawingData, canvasRef) => {
+    const uploadDrawing = async (drawingData, canvasRef, thumbnailRatio) => {
         setIsPending(true);
 
         try {
@@ -28,7 +28,7 @@ export const useUploadDrawing = (collectionPath) => {
             console.log('added drawing id = ' + addedDocument.id);
 
             // Prepare thumbnail canvas
-            const thumbCanvas = createThumbnailCanvas(canvasRef, 0.5);
+            const thumbCanvas = createThumbnailCanvas(canvasRef, thumbnailRatio);
 
             // Blobify thumbnail canvas and call upload method
             thumbCanvas.toBlob((blob) => {

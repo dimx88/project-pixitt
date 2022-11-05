@@ -52,6 +52,7 @@ export default class Mouse {
 
     onMouseDown(e) {
         if (this.preventDefault && e.target == this.element) e.preventDefault();
+        if (e.target !== this.element) return;
 
         this.setButtonState(e.button, true);
     }
