@@ -22,13 +22,13 @@ export default function Canvas({ setCanvasRef }) {
     const canvasRef = useRef(null);
     const contextRef = useRef(null);
 
-    const dimensions = { width: 126, height: 80 };
-    const defaultBackgroundColor = '#eeeeee';
+    // const dimensions = { width: 126, height: 80 };
+    const dimensions = { width: 96, height: 64 };
     const pixelSize = 10;
+    const defaultBackgroundColor = '#eeeeee';
     const pixels = new Array(dimensions.width * dimensions.height).fill(defaultBackgroundColor);
 
     // const randomHexColor = () => '#' + Math.floor(Math.random() * 16777215).toString(16);
-    // const pixels = new Array(dimensions.width * dimensions.height).fill('').map(() => randomHexColor());
 
 
     const mouse = new Mouse(null, true);
@@ -145,6 +145,12 @@ export default function Canvas({ setCanvasRef }) {
 
     }
 
+
+
+
+    // Helper functions
+    //--------------------------------
+
     const screenToPixelCoords = (x, y) => {
         return { x: ~~(x / pixelSize), y: ~~(y / pixelSize) };
     }
@@ -207,23 +213,12 @@ export default function Canvas({ setCanvasRef }) {
 
 
     return (
-        <>
-            {/* <div style={{ textAlign: 'center', border: '2px dashed red', width: 'fit-content', margin: 'auto' }}>
-                <p>Test Zone</p>
-                <button onClick={() => downloadThumbnail(canvasRef.current)}>Download Thumbnail</button>
-                <button onClick={() => uploadThumbnail(canvasRef.current)}>Upload Thumbnail</button>
-            </div> */}
-            <div className="canvas-wrapper">
-
-                <canvas
-                    className="canvas"
-                    id="canvas"
-                    ref={canvasRef}
-                    width={dimensions.width * pixelSize}
-                    height={dimensions.height * pixelSize}
-                />
-
-            </div>
-        </>
+        <canvas
+            className="canvas"
+            id="canvas"
+            ref={canvasRef}
+            width={dimensions.width * pixelSize}
+            height={dimensions.height * pixelSize}
+        />
     );
 }

@@ -1,11 +1,11 @@
 // Hooks
 import { useState } from 'react';
 import { useAuthContext } from '../../hooks/useAuthContext';
-
-
-
+import { useUploadDrawing } from '../../hooks/useUploadDrawing';
 import { useNavigate } from 'react-router-dom';
 
+// Utils
+import { downloadCanvas } from '../../utils/downloadCanvas';
 
 // Styles
 import './SaveDrawingForm.css';
@@ -14,11 +14,11 @@ import './SaveDrawingForm.css';
 
 
 
-export default function SaveDrawingForm() {
+export default function SaveDrawingForm({ canvasRef }) {
 
     const [drawingTitle, setDrawingTitle] = useState('');
     const [drawingInfo, setDrawingInfo] = useState('');
-    const [canvasRef, setCanvasRef] = useState(null);
+
 
     const { user } = useAuthContext();
     const nav = useNavigate();
@@ -36,34 +36,44 @@ export default function SaveDrawingForm() {
         nav('/gallery');
 
     }
-    
 
+    const loseFocus = (el) => {
+
+        document.activeElement.blur();
+    }
+
+
+    if (!canvasRef) return (<div>Creating Canvas...</div>);
     return (
-        <div className="save-drawing">
-            <div className="container">
-                <form onSubmit={onSubmit}>
-                    <h1>Create Test</h1>
-                    <label>
-                        <span>Drawing Title</span>
-                        <input type="text"
-                            required
-                            onChange={(e) => setDrawingTitle(e.target.value)}
-                            value={drawingTitle}
-                        />
-                    </label>
-                    <label>
-                        <span>More Info</span>
-                        <input type="text"
-                            required
-                            onChange={(e) => setDrawingInfo(e.target.value)}
-                            value={drawingInfo}
-                        />
-                    </label>
+        <div className="save-drawing" onMouseLeave={loseFocus}>
+            <div className="cover">
+                <h2>Save&#10140;</h2>    
+            </div>   
+            <form onSubmit={onSubmit}>
+                <h2>Save your Drawing</h2>
+                <label>
+                    <span>Title</span>
+                    <input type="text"
+                        required
+                        placeholder="Drawing title"
+                        onChange={(e) => setDrawingTitle(e.target.value)}
+                        value={drawingTitle}
+                    />
+                </label>
+                <label>
+                    <span>Description</span>
+                    <input type="text"
+                        required
+                        placeholder="About this drawing"
+                        onChange={(e) => setDrawingInfo(e.target.value)}
+                        value={drawingInfo}
+                    />
+                </label>
 
-                    {!isPending && <button className="btn" onClick={onSubmit}>Save Drawing</button>}
-                    {isPending && <button className="btn" disabled>Saving...</button>}
-                </form>
-            </div>
+                {!isPending && <button className="btn" onClick={onSubmit}>Save to Gallery</button>}
+                {isPending && <button className="btn" disabled>Saving...</button>}
+                {<button className="btn" onClick={() => downloadCanvas(canvasRef)}>Download Image</button>}
+            </form>
 
         </div>
     );

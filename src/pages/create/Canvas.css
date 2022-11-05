@@ -1,12 +1,12 @@
 .canvas-wrapper {
     border: 1px solid #bbbbbb;  
-    margin: 0 auto;
+    /* margin: 0 auto; */
     width:fit-content;
 }
 
 .canvas {
     display: block;
-    /* border: 1px solid #bbbbbb; */
+    border: 1px solid #bbbbbb;
     margin: 0 auto;
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
 }
