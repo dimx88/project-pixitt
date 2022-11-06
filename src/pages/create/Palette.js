@@ -6,12 +6,13 @@ import PaletteGen from "../../utils/paletteGen";
 // Styles
 import './Palette.css';
 
-export default function Palette() {
+export default function Palette({drawingAppShared}) {
     let palette;
     const paletteCanvasRef = useRef(null);
 
     useEffect(() => {
         palette = new PaletteGen(paletteCanvasRef.current, window);
+        drawingAppShared.paletteTool = palette;
     }, [])
 
     return (

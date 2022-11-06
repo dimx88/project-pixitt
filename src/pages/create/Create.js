@@ -16,16 +16,18 @@ import { useUploadDrawing } from '../../hooks/useUploadDrawing';
 export default function Create() {
 
     const [canvasRef, setCanvasRef] = useState(null);
-    const { user } = useAuthContext();
 
+    const drawingAppShared = {};
+
+    const { user } = useAuthContext();
 
 
     return (
         <div className="drawing-app">
-            <Palette />
+            <Palette drawingAppShared={drawingAppShared} />
             <div className="canvas-saveform">
-                <Canvas setCanvasRef={setCanvasRef} />
-                <SaveDrawingForm canvasRef={canvasRef} />
+                <Canvas setCanvasRef={setCanvasRef} drawingAppShared={drawingAppShared} />
+                <SaveDrawingForm canvasRef={canvasRef} drawingAppShared={drawingAppShared} />
 
             </div>
         </div>

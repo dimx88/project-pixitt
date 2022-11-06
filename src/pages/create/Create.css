@@ -1,6 +1,8 @@
+
 .drawing-app {
     border: 3px dashed red;
     overflow: hidden;
+    background: #333;
 
 }
 

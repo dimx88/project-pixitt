@@ -10,18 +10,14 @@ export default class PaletteGen {
         this.ctx = this.canvas.getContext("2d");
 
         this.colorCycler = new ColorCycler(0, 100, 50, -14, 0, 0);
-        this.colorCycler2 = new ColorCycler(0, 0, 0, 0, 0, 1.3);
-        this.divide_columns = false;
+        this.colorCyclerGrayscale = new ColorCycler(0, 0, 0, 0, 0, 1.3);
 
-
-
+        this.palette_array = null;
         this.rows = 16;
         this.columns = 30;
-        this.palette_array = null;
-        this.palette_switch = false;
 
         this.palette_number = 1;
-        this.number_of_palettes = 4;
+        this.number_of_palettes = 3;
 
         this.cell_width = this.canvas.width / this.columns;
         this.cell_height = this.canvas.height / this.rows;
@@ -54,7 +50,6 @@ export default class PaletteGen {
         window.addEventListener('mouseup', this._onMouseUp);
         window.addEventListener('mousemove', this._onMouseMove);
         window.addEventListener('contextmenu', this._onContextMenu);
-
         // window.addEventListener('mousewheel', this._onMouseWheel);
 
         this.initialize();
@@ -83,7 +78,7 @@ export default class PaletteGen {
         window.removeEventListener('mousemove', this._onMouseMove);
         // window.removeEventListener('mousewheel', this._onMouseWheel);
     }
-   
+
     onContextMenu(e) {
         if (e.target === this.canvas) e.preventDefault();
     }
@@ -100,7 +95,7 @@ export default class PaletteGen {
     }
 
     onMouseDown(e) {
-        if (this.canvas != e.target) return;
+        if (this.canvas !== e.target) return;
 
         if (e.button === 0) {
             this.mouse_down_left = true;
@@ -134,19 +129,14 @@ export default class PaletteGen {
     // onMouseWheel(e) {
     //     if (e.target.id === 'reference' || e.target.id === 'undo') return; //make sure active only on palette & drawing board
 
-    //     if (e.deltaY < 0) {           //up
+    //     if (e.deltaY < 0) {           // Scroll up
     //         this.selected_row = this.selected_row > 0 ? this.selected_row - 1 : 0;
     //         this.global.setActiveColor(this.getColorAt(this.selected_col, this.selected_row));
-
-
     //         this.updateDisplay();
     //     }
-
-    //     if (e.deltaY > 0) {           //down
+    //     if (e.deltaY > 0) {           // Scroll down
     //         this.selected_row = this.selected_row < this.rows - 1 ? this.selected_row + 1 : this.rows - 1;
     //         this.global.setActiveColor(this.getColorAt(this.selected_col, this.selected_row));
-
-
     //         this.updateDisplay();
     //     }
     // }
@@ -160,7 +150,7 @@ export default class PaletteGen {
     }
     //-------------------------------------------------------------
     updateDisplay() {
-        this.clear();
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.render();
         this.highlightSelectedColor();
         this.drawBorder();
@@ -175,15 +165,6 @@ export default class PaletteGen {
 
                 this.ctx.fillStyle = this.palette_array[i][j];
                 this.ctx.fillRect(i * this.cell_width, j * this.cell_height, this.cell_width + 1, this.cell_height + 1);
-            }
-
-            if (this.divide_columns) {
-                this.ctx.strokeStyle = '#000000';
-                this.ctx.lineWidth = 1;
-                this.ctx.beginPath();
-                this.ctx.moveTo(i * this.cell_width, 0);
-                this.ctx.lineTo(i * this.cell_width, this.canvas.width);
-                this.ctx.stroke();
             }
         }
 
@@ -224,18 +205,8 @@ export default class PaletteGen {
         }
     }
     //--------------------------------------------------------------
-    fillPalette2() { //dark palette
-        for (var i = 0; i < this.rows; i++) {
-            this.colorCycler.reset();
-            this.colorCycler.setSaturation(((i + 1) / this.rows) * 60 + 15);
-            this.colorCycler.setLightness(25);
-            for (var j = 0; j < this.columns - 5; j++) {
-                this.palette_array[j][i] = this.colorCycler.getNextColor();
-            }
-        }
-    }
-    //--------------------------------------------------------------
-    fillPalette3() { //muddy palette
+
+    fillPalette2() { //muddy palette
         for (var i = 0; i < this.rows; i++) {
             this.colorCycler.reset();
             this.colorCycler.setLightness(((i + 1) / this.rows) * 60 + 15);
@@ -246,7 +217,7 @@ export default class PaletteGen {
         }
     }
     //--------------------------------------------------------------
-    fillPalette4() { //muddier palette
+    fillPalette3() { //muddier palette
         for (var i = 0; i < this.rows; i++) {
             this.colorCycler.reset();
             this.colorCycler.setLightness(((i + 1) / this.rows) * 60 + 15);
@@ -259,10 +230,10 @@ export default class PaletteGen {
     //-------------------------------------------------------------
 
     fillPaletteGreyScale() {
-        this.colorCycler2.reset();
+        this.colorCyclerGrayscale.reset();
         for (var i = this.columns - 5; i < this.columns; i++) {   ///    GREYSCALE
             for (var j = 0; j < this.rows; j++) {
-                this.palette_array[i][j] = this.colorCycler2.getNextColor();
+                this.palette_array[i][j] = this.colorCyclerGrayscale.getNextColor();
             }
         }
     }
@@ -286,79 +257,40 @@ export default class PaletteGen {
     }
     //-------------------------------------------------------------
     getCellByColor(color) {
+        for (let n = 0; n < this.number_of_palettes; n++) {
 
-        for (var i = 0; i < this.columns; i++) {
-            for (var j = 0; j < this.rows; j++) {
-                if (this.palette_array[i][j] === color) {
-                    this.selected_col = i;
-                    this.selected_row = j;
-                    this.updateDisplay();
-                    return;
+            // Iterate through entire palette
+            for (var i = 0; i < this.columns; i++) {
+                for (var j = 0; j < this.rows; j++) {
+                    if (this.palette_array[i][j] === color) {
+                        this.selected_col = i;
+                        this.selected_row = j;
+                        this.global.setActiveColor(this.palette_array[i][j]);
+                        this.updateDisplay();
+                        return;
+                    }
                 }
             }
+
+                this.switchPalette();
+
         }
-
-        // if still haven't found the color, switch palette and search again:
-        this.switchPalette();
-
-        for (var i = 0; i < this.columns; i++) {
-            for (var j = 0; j < this.rows; j++) {
-                if (this.palette_array[i][j] === color) {
-                    this.selected_col = i;
-                    this.selected_row = j;
-                    this.updateDisplay();
-                    return;
-                }
-            }
-        }
-
-        //same thing, if still haven't found the color, switch palette and search again:
-        this.switchPalette();
-
-        for (var i = 0; i < this.columns; i++) {
-            for (var j = 0; j < this.rows; j++) {
-                if (this.palette_array[i][j] === color) {
-                    this.selected_col = i;
-                    this.selected_row = j;
-                    this.updateDisplay();
-                    return;
-                }
-            }
-        }
-
+        console.log('not found');
     }
     //-------------------------------------------------------------
-    getInvertedColor(color) {
-        if (!color)
-            return '#000000';
+    getInvertedRGB(color) {
+        if (!color) return '#000000';
 
-        let r, g, b, inverted;
-        r = parseInt((color[1] + color[2]), 16);
-        g = parseInt((color[3] + color[4]), 16);
-        b = parseInt((color[5] + color[6]), 16);
-        r = 255 - r;
-        g = 255 - g;
-        b = 255 - b;
+        let r = 255 - parseInt((color[1] + color[2]), 16);
+        let g = 255 - parseInt((color[3] + color[4]), 16);
+        let b = 255 - parseInt((color[5] + color[6]), 16);
         r = r.toString(16);
         g = g.toString(16);
         b = b.toString(16);
-        if (r.length < 2) r = 0 + r;
-        if (g.length < 2) g = 0 + g;
-        if (b.length < 2) b = 0 + b;
+        if (r.length < 2) r = '0' + r;
+        if (g.length < 2) g = '0' + g;
+        if (b.length < 2) b = '0' + b;
 
-
-        inverted = '#' + r + g + b;
-
-        return inverted;
+        return '#' + r + g + b;;
     }
-    //-------------------------------------------------------------
-    clear() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
-    //------------------------------------------------------------------------
-
-    normalize(val, min, max) {
-        return (val - min) / (max - min);
-    }
-
 }  

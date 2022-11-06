@@ -29,7 +29,7 @@ export default function Drawing() {
         <div className="drawing">
             <div className="container">
 
-                {document && <DrawingDetails drawing={document} className="drawing-details" />}
+                {document && <DrawingDetails className="drawing-details" drawing={document} uid={user.uid}/>}
                 {user && document && <AddCommentForm drawingID={document.id} />}
                 {document && <DisplayComments drawingID={document.id} uid={user.uid}/>}
 

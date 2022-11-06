@@ -14,7 +14,7 @@ import { storage } from '../../firebase/config';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 
-export default function Canvas({ setCanvasRef }) {
+export default function Canvas({ setCanvasRef, drawingAppShared }) {
 
     console.log('canvas component re-rendered');
     // Setup
@@ -23,7 +23,7 @@ export default function Canvas({ setCanvasRef }) {
     const canvasRef = useRef(null);
     const contextRef = useRef(null);
 
-    // const dimensions = { width: 126, height: 80 };
+    // const dimensions = { width: 96, height: 64 };
     const dimensions = { width: 96, height: 64 };
     const pixelSize = 12;
     const defaultBackgroundColor = '#eeeeee';
@@ -114,6 +114,11 @@ export default function Canvas({ setCanvasRef }) {
             setState(states.FILLING);
             return;
         }
+
+        if (mouse.button[1] && !mouse.button[0] && !mouse.button[2]) {
+            setState(states.COLOR_PICKING);
+            return;
+        }
     }
 
     const executeState_DRAWING = () => {
@@ -139,7 +144,7 @@ export default function Canvas({ setCanvasRef }) {
     const executeState_FILLING = () => {
         if (!mouse.button[0] && !mouse.button[1] && !mouse.button[2]) {
             const pos = screenToPixelCoords(mouse.pos.x, mouse.pos.y);
-        if (!isWithinBounds(pos.x, pos.y)) return;
+            if (!isWithinBounds(pos.x, pos.y)) return;
 
             floodFill(pos.x, pos.y);
             setState(states.IDLE);
@@ -149,7 +154,16 @@ export default function Canvas({ setCanvasRef }) {
     }
 
     const executeState_COLOR_PICKING = () => {
+        if (!mouse.button[1] && !mouse.button[0] && !mouse.button[2]) {
 
+            if (drawingAppShared.paletteTool) {
+                const pos = screenToPixelCoords(mouse.pos.x, mouse.pos.y);
+                drawingAppShared.paletteTool.getCellByColor(getPixel(pos.x, pos.y));
+            }
+
+            setState(states.IDLE);
+            return;
+        }
     }
 
     const executeState_LOCKED = () => {
