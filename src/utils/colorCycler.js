@@ -1,38 +1,45 @@
 export default class ColorCycler {
-	constructor(h, s, l, h_rate, s_rate, l_rate) {
+	constructor(h, s, l, h_cycle_rate, s_cycle_rate, l_cycle_rate) {
+
 		this.initial_h = h;
 		this.initial_s = s;
 		this.initial_l = l;
+
 		this.h = h;
-		this.h_rate = h_rate;
 		this.s = s;
-		this.s_rate = s_rate;
 		this.l = l;
-		this.l_rate = l_rate;
-		this.color = 'null';
+
+		this.h_cycle_rate = h_cycle_rate;
+		this.s_cycle_rate = s_cycle_rate;
+		this.l_cycle_rate = l_cycle_rate;
 	}
 
 	getNextColor() {
-		this.color = 'hsl(' + this.h + ', ' + this.s + '%, ' + this.l + '%)';
-		this.h += this.h_rate;
-		this.setSaturation(this.s + this.s_rate);
-		this.setLightness(this.l + this.l_rate);
+
+		this.h += this.h_cycle_rate;
+		this.setSaturation(this.s + this.s_cycle_rate);
+		this.setLightness(this.l + this.l_cycle_rate);
+
 		if (this.h < 1) {
 			this.h = 360 - Math.abs(this.h);
 		} else if (this.h > 360) {
 			this.h = this.h - 360;
 		}
-		this.color = 'hsl(' + this.h + ', ' + this.s + '%, ' + this.l + '%)';
+
 		let rgb = this.hslToHex(this.h, this.s, this.l);
 		return rgb;
 
 	}
+
+
 	setSaturation(saturation) {
 		this.s = saturation > 100 ? 100 : saturation;
 	}
+
 	setLightness(lightness) {
 		this.l = lightness > 100 ? 100 : lightness;
 	}
+
 	reset() {
 		this.h = this.initial_h;
 		this.s = this.initial_s;

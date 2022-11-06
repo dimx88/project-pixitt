@@ -3,7 +3,7 @@ import ColorCycler from "./colorCycler";
 // Alert! Very old and messy code
 
 export default class PaletteGen {
-    constructor(canvasRef, global=window) {
+    constructor(canvasRef, global = window) {
 
         this.canvas = canvasRef;
         this.global = global;
@@ -17,7 +17,7 @@ export default class PaletteGen {
 
         this.rows = 16;
         this.columns = 30;
-        this.palette_array = new Array(this.columns);
+        this.palette_array = null;
         this.palette_switch = false;
 
         this.palette_number = 1;
@@ -28,7 +28,6 @@ export default class PaletteGen {
 
         this.selected_col = 25;
         this.selected_row = 0;
-
 
         this.outer_border_color = '#000000';
         this.outer_border_width = 1;
@@ -42,7 +41,9 @@ export default class PaletteGen {
         this.selected_line_width = 3;
         this.selected_line_color = '#ffffff';
 
+
         // Make local bindings so we can remove them later
+
         this._onMouseDown = this.onMouseDown.bind(this);
         this._onMouseUp = this.onMouseUp.bind(this);
         this._onMouseMove = this.onMouseMove.bind(this);
@@ -58,18 +59,23 @@ export default class PaletteGen {
 
         this.initialize();
         this.updateDisplay();
-        
-        //----
-        this.global.activeColor = '#000000';
+
+    }
+
+    // --------------------------------------------------------------
+    initialize() {
+        this.palette_array = [...new Array(this.columns)].map(() => [...new Array(this.rows)]);
+
+        this['fillPalette' + this.palette_number]();
+        this.fillPaletteGreyScale();
+
         this.global.setActiveColor = (color) => {
             this.global.activeColor = color;
         }
 
         this.global.setActiveColor(this.getColorAt(this.selected_col, this.selected_row));
-        //----
     }
 
-   
     //------------------------------------------------------------
     removeListeners() {
         window.removeEventListener('mousedown', this._onMouseDown);
@@ -77,10 +83,11 @@ export default class PaletteGen {
         window.removeEventListener('mousemove', this._onMouseMove);
         // window.removeEventListener('mousewheel', this._onMouseWheel);
     }
-    //-------------------------------------------------------------
+   
     onContextMenu(e) {
         if (e.target === this.canvas) e.preventDefault();
     }
+
     onMouseMove(e) {
         if (this.canvas != e.target) return;
         this.mouse_x = e.clientX - this.canvas.getBoundingClientRect().left;
@@ -91,7 +98,7 @@ export default class PaletteGen {
             this.updateDisplay();
         }
     }
-    //-------------------------------------------------------------
+
     onMouseDown(e) {
         if (this.canvas != e.target) return;
 
@@ -124,29 +131,30 @@ export default class PaletteGen {
 
     }
     //--------------------------------------------------------------
-    onMouseWheel(e) {
-        if (e.target.id === 'reference' || e.target.id === 'undo') return; //make sure active only on palette & drawing board
+    // onMouseWheel(e) {
+    //     if (e.target.id === 'reference' || e.target.id === 'undo') return; //make sure active only on palette & drawing board
 
-        if (e.deltaY < 0) {           //up
-            this.selected_row = this.selected_row > 0 ? this.selected_row - 1 : 0;
-            this.global.setActiveColor(this.getColorAt(this.selected_col, this.selected_row));
+    //     if (e.deltaY < 0) {           //up
+    //         this.selected_row = this.selected_row > 0 ? this.selected_row - 1 : 0;
+    //         this.global.setActiveColor(this.getColorAt(this.selected_col, this.selected_row));
 
-         
-            this.updateDisplay();
-        }
 
-        if (e.deltaY > 0) {           //down
-            this.selected_row = this.selected_row < this.rows - 1 ? this.selected_row + 1 : this.rows - 1;
-            this.global.setActiveColor(this.getColorAt(this.selected_col, this.selected_row));
+    //         this.updateDisplay();
+    //     }
 
-     
-            this.updateDisplay();
-        }
-    }
-    //-------------------------------------------------------------
+    //     if (e.deltaY > 0) {           //down
+    //         this.selected_row = this.selected_row < this.rows - 1 ? this.selected_row + 1 : this.rows - 1;
+    //         this.global.setActiveColor(this.getColorAt(this.selected_col, this.selected_row));
+
+
+    //         this.updateDisplay();
+    //     }
+    // }
+
+    //--------------------------------------------------------------
     selectColorAtCursor() {
-        this.selected_col = Math.floor(this.mouse_x / this.cell_width);
-        this.selected_row = Math.floor(this.mouse_y / this.cell_height);
+        this.selected_col = ~~(this.mouse_x / this.cell_width);
+        this.selected_row = ~~(this.mouse_y / this.cell_height);
         this.global.setActiveColor(this.getColorAt(this.selected_col, this.selected_row));
 
     }
@@ -166,11 +174,9 @@ export default class PaletteGen {
                 if (this.palette_array[i][j] === null) continue;
 
                 this.ctx.fillStyle = this.palette_array[i][j];
-
                 this.ctx.fillRect(i * this.cell_width, j * this.cell_height, this.cell_width + 1, this.cell_height + 1);
-
-
             }
+
             if (this.divide_columns) {
                 this.ctx.strokeStyle = '#000000';
                 this.ctx.lineWidth = 1;
@@ -181,9 +187,6 @@ export default class PaletteGen {
             }
         }
 
-        this.ctx.lineWidth = this.selected_line_width;
-        this.ctx.strokeStyle = this.selected_line_color;
-
 
         this.ctx.restore();
 
@@ -192,6 +195,7 @@ export default class PaletteGen {
     }
     //-------------------------------------------------------------
     highlightSelectedColor() {
+
         this.ctx.save();
         this.ctx.lineWidth = this.selected_line_width;
 
@@ -207,36 +211,8 @@ export default class PaletteGen {
         this.ctx.restore();
     }
 
-    //------------------------------------------------------------
+    //-----------------------------------------------------------
 
-    initialize() {
-        for (var i = 0; i < this.columns; i++) {
-            this.palette_array[i] = new Array(this.rows);
-        }
-        switch (this.palette_number) {
-            case 1:
-                this.fillPalette1();
-                break;
-            case 2:
-                this.fillPalette2();
-                break;
-            case 3:
-                this.fillPalette3();
-                break;
-            case 4:
-                this.fillPalette4();
-                break;
-        }
-
-        this.fillPaletteGreyScale();
-
-        this.palette_array[0][0] = this.palette_array[0][1] = null;
-
-        console.log('paletteGen init');
-    }   
-
-    //--------------------------------------------------------------
-    //--------------------------------------------------------------
     fillPalette1() { //cycles only lightness
         for (var i = 0; i < this.rows; i++) {
             this.colorCycler.reset();
@@ -373,7 +349,6 @@ export default class PaletteGen {
 
         inverted = '#' + r + g + b;
 
-        //	console.log(inverted);
         return inverted;
     }
     //-------------------------------------------------------------

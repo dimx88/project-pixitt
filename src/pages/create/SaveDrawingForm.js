@@ -14,7 +14,7 @@ import './SaveDrawingForm.css';
 
 
 
-export default function SaveDrawingForm({ canvasRef }) {
+export default function SaveDrawingForm({ canvasRef, pixelData }) {
 
     const [drawingTitle, setDrawingTitle] = useState('');
     const [drawingInfo, setDrawingInfo] = useState('');
