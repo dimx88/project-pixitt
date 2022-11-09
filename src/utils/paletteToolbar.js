@@ -2,12 +2,12 @@ import ColorCycler from "./colorCycler";
 
 // Alert! Very old and messy code
 
-export default class PaletteGen {
+export default class PaletteToolbar {
     constructor(canvasRef, global = window) {
 
         this.canvas = canvasRef;
         this.global = global;
-        this.ctx = this.canvas.getContext("2d");
+        this.ctx = this.canvas.getContext('2d');
 
         this.colorCycler = new ColorCycler(0, 100, 50, -14, 0, 0);
         this.colorCyclerGrayscale = new ColorCycler(0, 0, 0, 0, 0, 1.3);
@@ -45,12 +45,8 @@ export default class PaletteGen {
         this._onMouseMove = this.onMouseMove.bind(this);
         this._onContextMenu = this.onContextMenu.bind(this);
         // this._onMouseWheel = this.onMouseWheel.bind(this);
+        this.addListeners();
 
-        window.addEventListener('mousedown', this._onMouseDown);
-        window.addEventListener('mouseup', this._onMouseUp);
-        window.addEventListener('mousemove', this._onMouseMove);
-        window.addEventListener('contextmenu', this._onContextMenu);
-        // window.addEventListener('mousewheel', this._onMouseWheel);
 
         this.initialize();
         this.updateDisplay();
@@ -69,8 +65,18 @@ export default class PaletteGen {
         }
 
         this.global.setActiveColor(this.getColorAt(this.selected_col, this.selected_row));
+
+ 
     }
 
+    //------------------------------------------------------------
+    addListeners() {
+        window.addEventListener('mousedown', this._onMouseDown);
+        window.addEventListener('mouseup', this._onMouseUp);
+        window.addEventListener('mousemove', this._onMouseMove);
+        window.addEventListener('contextmenu', this._onContextMenu);
+        // window.addEventListener('mousewheel', this._onMouseWheel);
+    }
     //------------------------------------------------------------
     removeListeners() {
         window.removeEventListener('mousedown', this._onMouseDown);
@@ -84,7 +90,7 @@ export default class PaletteGen {
     }
 
     onMouseMove(e) {
-        if (this.canvas != e.target) return;
+        if (this.canvas !== e.target) return;
         this.mouse_x = e.clientX - this.canvas.getBoundingClientRect().left;
         this.mouse_y = e.clientY - this.canvas.getBoundingClientRect().top;
 
@@ -231,7 +237,7 @@ export default class PaletteGen {
 
     fillPaletteGreyScale() {
         this.colorCyclerGrayscale.reset();
-        for (var i = this.columns - 5; i < this.columns; i++) {   ///    GREYSCALE
+        for (var i = this.columns - 5; i < this.columns; i++) {
             for (var j = 0; j < this.rows; j++) {
                 this.palette_array[i][j] = this.colorCyclerGrayscale.getNextColor();
             }
@@ -272,10 +278,10 @@ export default class PaletteGen {
                 }
             }
 
-                this.switchPalette();
+            this.switchPalette();
 
         }
-        console.log('not found');
+        console.log('Color not found inside palette');
     }
     //-------------------------------------------------------------
     getInvertedRGB(color) {

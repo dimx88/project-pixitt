@@ -2,21 +2,17 @@
 // Utils
 import Mouse from '../../utils/mouse';
 import getLineBetween from '../../utils/getLine';
-import { createThumbnailCanvas, downloadCanvas, downloadThumbnail } from '../../utils/downloadCanvas';
 
 //  Styles
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import './Canvas.css';
 
-// TEMP FOR TESTING
-import { useAuthContext } from '../../hooks/useAuthContext';
-import { storage } from '../../firebase/config';
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 
-export default function Canvas({ setCanvasRef, drawingAppShared }) {
+export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
 
-    console.log('canvas component re-rendered');
+    console.log('canvas rendered');
+
     // Setup
     //-----------------------------------------------------
 
@@ -32,38 +28,38 @@ export default function Canvas({ setCanvasRef, drawingAppShared }) {
     // const randomHexColor = () => '#' + Math.floor(Math.random() * 16777215).toString(16);
 
 
-    const mouse = new Mouse(null, true);
+    // const mouse = new Mouse(null, true);
+    const mouse = new Mouse(canvasRef.current, true);
+
 
 
     //-----------------------------------------------------
 
     useEffect(() => {
         setCanvasRef(canvasRef.current);
-
-        const canvas = canvasRef.current;
-        contextRef.current = canvas.getContext('2d');
-
-        mouse.follow(canvas, true);
+        contextRef.current = canvasRef.current.getContext('2d');
 
 
+        // Add listeners
+        document.addEventListener('mousedown', onMouseEvent);
+        document.addEventListener('mouseup', onMouseEvent);
+        document.addEventListener('mousemove', onMouseEvent);
 
-        // Add listener
-        window.addEventListener('mousedown', onMouseEvent);
-        window.addEventListener('mouseup', onMouseEvent);
-        window.addEventListener('mousemove', onMouseEvent);
+
 
 
         render();
-        // drawGrid();
 
         // Cleanup function
         return () => {
-            window.removeEventListener('mousedown', onMouseEvent);
-            window.removeEventListener('mouseup', onMouseEvent);
-            window.removeEventListener('mousemove', onMouseEvent);
+            document.removeEventListener('mousedown', onMouseEvent);
+            document.removeEventListener('mouseup', onMouseEvent);
+            document.removeEventListener('mousemove', onMouseEvent);
             mouse.removeListeners();
         };
-    }, []);
+
+    }, [render, setCanvasRef]);
+
 
 
 
@@ -72,9 +68,11 @@ export default function Canvas({ setCanvasRef, drawingAppShared }) {
 
     // State machine
     // ---------------------------------------
+
     const onMouseEvent = (e) => {
         executeCurrentState();
     }
+
     const states = { IDLE: 'IDLE', DRAWING: 'DRAWING', FILLING: 'FILLING', COLOR_PICKING: 'COLOR_PICKING', LOCKED: 'LOCKED' };
     const state = { current: states.IDLE };
 
@@ -90,6 +88,7 @@ export default function Canvas({ setCanvasRef, drawingAppShared }) {
                 executeState_IDLE();
                 break;
             case states.DRAWING:
+
                 executeState_DRAWING();
                 break;
             case states.FILLING:
@@ -101,6 +100,8 @@ export default function Canvas({ setCanvasRef, drawingAppShared }) {
             case states.LOCKED:
                 executeState_LOCKED();
                 break;
+            default: 
+                return;
         }
     }
 
@@ -155,11 +156,12 @@ export default function Canvas({ setCanvasRef, drawingAppShared }) {
 
     const executeState_COLOR_PICKING = () => {
         if (!mouse.button[1] && !mouse.button[0] && !mouse.button[2]) {
-
-            if (drawingAppShared.paletteTool) {
+            if (drawingAppShared.paletteToolbar) {
                 const pos = screenToPixelCoords(mouse.pos.x, mouse.pos.y);
-                drawingAppShared.paletteTool.getCellByColor(getPixel(pos.x, pos.y));
+                // drawingAppShared.paletteToolbar.getCellByColor(getPixel(pos.x, pos.y));
+                drawingAppShared.paletteToolbar.getCellByColor(getPixel(pos.x, pos.y));
             }
+
 
             setState(states.IDLE);
             return;
@@ -263,21 +265,8 @@ export default function Canvas({ setCanvasRef, drawingAppShared }) {
             renderPixel(x, y);
         }
 
-        console.log('re-rendered pixels');
-        console.log('...');
     }
 
-
-    function drawGrid() {
-        const canvas = canvasRef.current;
-        const ctx = contextRef.current;
-
-        ctx.strokeStyle = '#dadada';
-        for (let x = 0; x < canvas.width; x += pixelSize)
-            for (let y = 0; y < canvas.height; y += pixelSize)
-                ctx.strokeRect(x, y, pixelSize, pixelSize);
-
-    }
 
 
     return (

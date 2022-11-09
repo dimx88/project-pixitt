@@ -21,10 +21,10 @@ export default class Mouse {
     }
 
     registerListeners() {
-        window.addEventListener('mousedown', this._onMouseDown);
-        window.addEventListener('mouseup', this._onMouseUp);
-        window.addEventListener('mousemove', this._onMouseMove);
-        window.addEventListener('contextmenu', this._onContextMenu);
+        document.addEventListener('mousedown', this._onMouseDown);
+        document.addEventListener('mouseup', this._onMouseUp);
+        document.addEventListener('mousemove', this._onMouseMove);
+        document.addEventListener('contextmenu', this._onContextMenu);
     }
 
 
@@ -33,10 +33,10 @@ export default class Mouse {
     }
 
     removeListeners() {
-        window.removeEventListener('mousedown', this._onMouseDown);
-        window.removeEventListener('mouseup', this._onMouseUp);
-        window.removeEventListener('mousemove', this._onMouseMove);
-        window.removeEventListener('contextmenu', this._onContextMenu);
+        document.removeEventListener('mousedown', this._onMouseDown);
+        document.removeEventListener('mouseup', this._onMouseUp);
+        document.removeEventListener('mousemove', this._onMouseMove);
+        document.removeEventListener('contextmenu', this._onContextMenu);
     }
 
     resetButtons() {
@@ -46,12 +46,12 @@ export default class Mouse {
 
 
     onContextMenu(e) {
-        if (this.preventDefault && e.target == this.element) e.preventDefault();
+        if (this.preventDefault && e.target === this.element) e.preventDefault();
         // if (this.preventDefault) e.preventDefault();
     }
 
     onMouseDown(e) {
-        if (this.preventDefault && e.target == this.element) e.preventDefault();
+        if (this.preventDefault && e.target === this.element) e.preventDefault();
         if (e.target !== this.element) return;
 
         this.setButtonState(e.button, true);

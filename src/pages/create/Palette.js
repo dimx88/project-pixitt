@@ -1,18 +1,20 @@
 
 // Utils
 import { useEffect, useRef } from "react";
-import PaletteGen from "../../utils/paletteGen";
+import PaletteToolbar from "../../utils/paletteToolbar";
 
 // Styles
 import './Palette.css';
 
-export default function Palette({drawingAppShared}) {
-    let palette;
+export default function Palette({ drawingAppShared, setPaletteRef }) {
+
+    let paletteToolbar;
     const paletteCanvasRef = useRef(null);
 
     useEffect(() => {
-        palette = new PaletteGen(paletteCanvasRef.current, window);
-        drawingAppShared.paletteTool = palette;
+        paletteToolbar = new PaletteToolbar(paletteCanvasRef.current, window);
+        drawingAppShared.paletteToolbar = paletteToolbar;
+        setPaletteRef(paletteToolbar);
     }, [])
 
     return (
