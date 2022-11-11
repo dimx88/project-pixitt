@@ -90,9 +90,7 @@ export default class PaletteToolbar {
     }
 
     onMouseMove(e) {
-        if (this.canvas !== e.target) return;
-        this.mouse_x = e.clientX - this.canvas.getBoundingClientRect().left;
-        this.mouse_y = e.clientY - this.canvas.getBoundingClientRect().top;
+        this.updateMousePosition(e);
 
         if (this.mouse_down_left) {
             this.selectColorAtCursor();
@@ -100,8 +98,16 @@ export default class PaletteToolbar {
         }
     }
 
+    updateMousePosition(e) {
+        // if (this.canvas !== e.target) return;
+        this.mouse_x = e.clientX - this.canvas.getBoundingClientRect().left;
+        this.mouse_y = e.clientY - this.canvas.getBoundingClientRect().top;
+    }
+
     onMouseDown(e) {
         if (this.canvas !== e.target) return;
+
+        this.updateMousePosition(e);
 
         if (e.button === 0) {
             this.mouse_down_left = true;

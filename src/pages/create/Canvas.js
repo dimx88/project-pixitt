@@ -28,7 +28,7 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
 
 
     const mouse = useRef(new Mouse(null, true)).current;
-    // if (canvasRef.current) mouse.follow(canvasRef.current);
+
    
 
 
@@ -73,8 +73,8 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
     const state = { current: states.IDLE };
 
     const setState = (newState) => {
+        // console.log('set state to -> ' + newState);
         state.current = newState;
-        console.log('set state to -> ' + newState);
         executeCurrentState();
     }
 
@@ -143,9 +143,9 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
             const pos = screenToPixelCoords(mouse.pos.x, mouse.pos.y);
             if (!isWithinBounds(pos.x, pos.y)) return;
 
-            floodFill(pos.x, pos.y, window.activeColor);
+            const floodedPixels = floodFill(pos.x, pos.y, window.activeColor);
+            render(floodedPixels);
             setState(states.IDLE);
-            render();
             return;
         }
     }
@@ -179,8 +179,6 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
     //--------------------------------
 
     const screenToPixelCoords = (x, y) => {
-        // console.log(`mouse pos ${x}, ${y}`); 
-        // console.log(`pixel pos ${~~(x / pixelSize)}, ${~~(y / pixelSize)}`);
         return { x: ~~(x / pixelSize), y: ~~(y / pixelSize) };
     }
 
@@ -200,6 +198,7 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
 
         if (oldColor === fillColor) return;
 
+        const updatedPixels = [];
         const queue = [];
 
         queue.push({ x, y });
@@ -211,6 +210,7 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
 
             if (getPixel(currentPixel.x, currentPixel.y) === oldColor) {
                 setPixel(currentPixel.x, currentPixel.y, fillColor);
+                updatedPixels.push(currentPixel);
             }
 
             for (let neighbor of getNeighbors(currentPixel.x, currentPixel.y)) {
@@ -218,6 +218,8 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
                     queue.push(neighbor);
             }
         }
+        
+        return updatedPixels;
     }
 
     const isWithinBounds = (x, y) => {
@@ -254,15 +256,12 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
     }
 
     function render(pixelsArr) {
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext('2d');
+        const ctx = canvasRef.current.getContext('2d');
 
         if (pixelsArr) {
-            renderPixels(pixelsArr, ctx);
-            return;
+            return renderPixels(pixelsArr, ctx);
         }
 
-        // ctx.clearRect(0, 0, canvas.width, canvas.height);
         for (let i = 0; i < pixels.length; i++) {
             const x = i % dimensions.width;
             const y = ~~(i / dimensions.width);

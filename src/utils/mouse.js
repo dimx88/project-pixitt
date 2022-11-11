@@ -92,7 +92,6 @@ export default class Mouse {
     }
 
     get pos() {
-        console.log('getPos');
         return this._pos;
     }
 
