@@ -4,7 +4,7 @@ import Mouse from '../../utils/mouse';
 import getLineBetween from '../../utils/getLine';
 
 //  Styles
-import { useEffect, useRef } from 'react';
+import {  useEffect, useRef } from 'react';
 import './Canvas.css';
 
 
@@ -13,55 +13,53 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
 
     console.log('canvas rendered');
 
+
+
     // Setup
     //-----------------------------------------------------
 
     const canvasRef = useRef(null);
-    const contextRef = useRef(null);
+    // const ctx = canvasRef.current ? canvasRef.current.getContext('2d') : null;
 
-    // const dimensions = { width: 96, height: 64 };
     const dimensions = { width: 96, height: 64 };
     const pixelSize = 12;
-    const defaultBackgroundColor = '#eeeeee';
+    const defaultBackgroundColor = '#666666';
     const pixels = new Array(dimensions.width * dimensions.height).fill(defaultBackgroundColor);
 
-    // const randomHexColor = () => '#' + Math.floor(Math.random() * 16777215).toString(16);
 
-
-    // const mouse = new Mouse(null, true);
-    const mouse = new Mouse(canvasRef.current, true);
-
+    const mouse = useRef(new Mouse(null, true)).current;
+    // if (canvasRef.current) mouse.follow(canvasRef.current);
+   
 
 
     //-----------------------------------------------------
 
     useEffect(() => {
-        setCanvasRef(canvasRef.current);
-        contextRef.current = canvasRef.current.getContext('2d');
 
+        // Pass reference of the canvas element to the parent component 
+        setCanvasRef(canvasRef.current);
+
+        mouse.follow(canvasRef.current);
 
         // Add listeners
-        document.addEventListener('mousedown', onMouseEvent);
-        document.addEventListener('mouseup', onMouseEvent);
-        document.addEventListener('mousemove', onMouseEvent);
-
-
+        document.addEventListener('mousedown', executeCurrentState);
+        document.addEventListener('mouseup', executeCurrentState);
+        document.addEventListener('mousemove', executeCurrentState);
 
 
         render();
 
-        // Cleanup function
+        
+        
+        // Cleanup
         return () => {
-            document.removeEventListener('mousedown', onMouseEvent);
-            document.removeEventListener('mouseup', onMouseEvent);
-            document.removeEventListener('mousemove', onMouseEvent);
+            document.removeEventListener('mousedown', executeCurrentState);
+            document.removeEventListener('mouseup', executeCurrentState);
+            document.removeEventListener('mousemove', executeCurrentState);
             mouse.removeListeners();
         };
-
-    }, [render, setCanvasRef]);
-
-
-
+        
+    }, []);
 
 
 
@@ -69,9 +67,7 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
     // State machine
     // ---------------------------------------
 
-    const onMouseEvent = (e) => {
-        executeCurrentState();
-    }
+
 
     const states = { IDLE: 'IDLE', DRAWING: 'DRAWING', FILLING: 'FILLING', COLOR_PICKING: 'COLOR_PICKING', LOCKED: 'LOCKED' };
     const state = { current: states.IDLE };
@@ -100,7 +96,7 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
             case states.LOCKED:
                 executeState_LOCKED();
                 break;
-            default: 
+            default:
                 return;
         }
     }
@@ -137,7 +133,7 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
         const prevPos = screenToPixelCoords(mouse.prevPos.x, mouse.prevPos.y);
 
         if (isWithinBounds(pos.x, pos.y) && isWithinBounds(prevPos.x, prevPos.y))
-            drawLine(prevPos, pos);
+            drawLine(prevPos, pos, window.activeColor);
     }
 
 
@@ -147,7 +143,7 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
             const pos = screenToPixelCoords(mouse.pos.x, mouse.pos.y);
             if (!isWithinBounds(pos.x, pos.y)) return;
 
-            floodFill(pos.x, pos.y);
+            floodFill(pos.x, pos.y, window.activeColor);
             setState(states.IDLE);
             render();
             return;
@@ -158,7 +154,7 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
         if (!mouse.button[1] && !mouse.button[0] && !mouse.button[2]) {
             if (drawingAppShared.paletteToolbar) {
                 const pos = screenToPixelCoords(mouse.pos.x, mouse.pos.y);
-                // drawingAppShared.paletteToolbar.getCellByColor(getPixel(pos.x, pos.y));
+
                 drawingAppShared.paletteToolbar.getCellByColor(getPixel(pos.x, pos.y));
             }
 
@@ -189,19 +185,18 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
     }
 
 
-    const drawLine = (point1, point2) => {
+    const drawLine = (point1, point2, color) => {
         const line = getLineBetween(point1, point2);
-
-        for (let point of line) {
-            setPixel(point.x, point.y, window.activeColor);
-            renderPixel(point.x, point.y);
+        for (let pixel of line) {
+            setPixel(pixel.x, pixel.y, color);
         }
+
+        render(line);
     }
 
-    const floodFill = (x, y) => {
+    const floodFill = (x, y, fillColor) => {
 
         const oldColor = getPixel(x, y);
-        const fillColor = window.activeColor;
 
         if (oldColor === fillColor) return;
 
@@ -246,23 +241,32 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
     }
 
 
-    const renderPixel = (x, y) => {
-        const ctx = contextRef.current;
-
+    const renderPixel = (x, y, ctx) => {
         ctx.fillStyle = getPixel(x, y);
         ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
 
     }
 
-    function render() {
-        const canvas = canvasRef.current;
-        const ctx = contextRef.current;
+    const renderPixels = (pixelsArr, ctx) => {
+        for (let pixel of pixelsArr) {
+            renderPixel(pixel.x, pixel.y, ctx);
+        }
+    }
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    function render(pixelsArr) {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+
+        if (pixelsArr) {
+            renderPixels(pixelsArr, ctx);
+            return;
+        }
+
+        // ctx.clearRect(0, 0, canvas.width, canvas.height);
         for (let i = 0; i < pixels.length; i++) {
             const x = i % dimensions.width;
             const y = ~~(i / dimensions.width);
-            renderPixel(x, y);
+            renderPixel(x, y, ctx);
         }
 
     }

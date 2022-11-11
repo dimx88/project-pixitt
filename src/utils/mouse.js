@@ -1,12 +1,13 @@
 export default class Mouse {
 
     constructor(element = null, preventDefault = false) {
-        this.pos = { x: 0, y: 0 };
-        this.prevPos = { x: 0, y: 0 };
+        // Button supports both numeric and named reference
         this.button = { left: false, middle: false, right: false, '0': false, '1': false, '2': false };
-        this.leftElementBounds = false;
-        this.preventDefault = preventDefault;
 
+        this._pos = { x: null, y: null };
+        this._prevPos = { x: null, y: null };
+
+        this.preventDefault = preventDefault;
         this.element = element;
 
 
@@ -16,8 +17,11 @@ export default class Mouse {
         this._onMouseUp = this.onMouseUp.bind(this);
         this._onContextMenu = this.onContextMenu.bind(this);
 
-        this.registerListeners();
+    }
 
+    follow(element) {
+        this.registerListeners();
+        this.element = element;
     }
 
     registerListeners() {
@@ -25,11 +29,6 @@ export default class Mouse {
         document.addEventListener('mouseup', this._onMouseUp);
         document.addEventListener('mousemove', this._onMouseMove);
         document.addEventListener('contextmenu', this._onContextMenu);
-    }
-
-
-    follow(element) {
-        this.element = element;
     }
 
     removeListeners() {
@@ -43,8 +42,6 @@ export default class Mouse {
         for (let b in this.button) this.button[b] = false;
     }
 
-
-
     onContextMenu(e) {
         if (this.preventDefault && e.target === this.element) e.preventDefault();
         // if (this.preventDefault) e.preventDefault();
@@ -55,6 +52,9 @@ export default class Mouse {
         if (e.target !== this.element) return;
 
         this.setButtonState(e.button, true);
+
+        // If pos has not been set yet (mouse clicked before moving first), set both prev and current position to the mouse position
+        if (this._pos.x === null)  this._pos = this._prevPos = this.getMousePosition(e); 
     }
 
     onMouseUp(e) {
@@ -62,11 +62,24 @@ export default class Mouse {
     }
 
     onMouseMove(e) {
-        const offset = this.element ? this.element.getBoundingClientRect() : { x: 0, y: 0 };
+        this.updatePosition(e);
+    }
 
-        this.prevPos = { x: this.pos.x, y: this.pos.y };
-        this.pos.x = e.clientX - offset.left;
-        this.pos.y = e.clientY - offset.top;
+    getMousePosition(e) {
+        const offset = this.element ? this.element.getBoundingClientRect() : { left: 0, top: 0 };
+        const x = e.clientX - offset.left;
+        const y = e.clientY - offset.top;
+
+        return { x, y };
+    }
+
+    updatePosition(e) {
+        const { x, y } = this.getMousePosition(e);
+
+        this._prevPos = { x: this._pos.x, y: this._pos.y };
+
+        this._pos.x = x;
+        this._pos.y = y;
     }
 
 
@@ -76,5 +89,14 @@ export default class Mouse {
         this.button.right = (button === 2 && isDown) || (this.button.right && button !== 2);
         this.button[button] = isDown;
 
+    }
+
+    get pos() {
+        console.log('getPos');
+        return this._pos;
+    }
+
+    get prevPos() {
+        return this._prevPos;
     }
 }
