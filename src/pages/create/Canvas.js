@@ -1,68 +1,70 @@
 
+import { useEffect, useRef } from 'react';
+
 // Utils
 import Mouse from '../../utils/mouse';
 import getLineBetween from '../../utils/getLine';
 
 //  Styles
-import {  useEffect, useRef } from 'react';
 import './Canvas.css';
+
 
 
 
 export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
 
     console.log('canvas rendered');
-
-
-
+    
+    
     // Setup
     //-----------------------------------------------------
-
+    
     const canvasRef = useRef(null);
     // const ctx = canvasRef.current ? canvasRef.current.getContext('2d') : null;
-
+    
     const dimensions = { width: 96, height: 64 };
     const pixelSize = 12;
     const defaultBackgroundColor = '#666666';
-    const pixels = new Array(dimensions.width * dimensions.height).fill(defaultBackgroundColor);
-
-
+    // const pixels = new Array(dimensions.width * dimensions.height).fill(defaultBackgroundColor);
+    const pixels = useRef(new Array(dimensions.width * dimensions.height).fill(defaultBackgroundColor)).current;
+    
+    
     const mouse = useRef(new Mouse(null, true)).current;
-
-   
+    
+    // const executeCurrentStateRef = useRef();
+    // executeCurrentStateRef.current = executeCurrentState;
+    const executeCurrentStateRef = useRef(executeCurrentState).current;
 
 
     //-----------------------------------------------------
 
     useEffect(() => {
-
-        // Pass reference of the canvas element to the parent component 
+        // Pass reference of the drawing canvas element to the parent component 
         setCanvasRef(canvasRef.current);
 
+        // Mouse util -> add listeners and offset the coordinates relative to the drawing canvas element
         mouse.follow(canvasRef.current);
 
         // Add listeners
-        document.addEventListener('mousedown', executeCurrentState);
-        document.addEventListener('mouseup', executeCurrentState);
-        document.addEventListener('mousemove', executeCurrentState);
+        document.addEventListener('mousedown', executeCurrentStateRef);
+        document.addEventListener('mouseup', executeCurrentStateRef);
+        document.addEventListener('mousemove', executeCurrentStateRef);
 
 
-        render();
 
-        
-        
         // Cleanup
         return () => {
-            document.removeEventListener('mousedown', executeCurrentState);
-            document.removeEventListener('mouseup', executeCurrentState);
-            document.removeEventListener('mousemove', executeCurrentState);
+            document.removeEventListener('mousedown', executeCurrentStateRef);
+            document.removeEventListener('mouseup', executeCurrentStateRef);
+            document.removeEventListener('mousemove', executeCurrentStateRef);
             mouse.removeListeners();
         };
-        
-    }, []);
 
+    }, [setCanvasRef, mouse, executeCurrentStateRef]);
 
-
+    if (canvasRef.current) {
+        render();
+    }
 
     // State machine
     // ---------------------------------------
@@ -72,38 +74,35 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
     const states = { IDLE: 'IDLE', DRAWING: 'DRAWING', FILLING: 'FILLING', COLOR_PICKING: 'COLOR_PICKING', LOCKED: 'LOCKED' };
     const state = { current: states.IDLE };
 
-    const setState = (newState) => {
-        // console.log('set state to -> ' + newState);
-        state.current = newState;
-        executeCurrentState();
-    }
 
-    const executeCurrentState = () => {
+    function executeCurrentState() {
+        // console.log('executing ', state.current, Math.random().toFixed(4));
         switch (state.current) {
             case states.IDLE:
-                executeState_IDLE();
-                break;
+                return executeState_IDLE();
             case states.DRAWING:
-
-                executeState_DRAWING();
-                break;
+                return executeState_DRAWING();
             case states.FILLING:
-                executeState_FILLING();
-                break;
+                return executeState_FILLING();
             case states.COLOR_PICKING:
-                executeState_COLOR_PICKING();
-                break;
+                return executeState_COLOR_PICKING();
             case states.LOCKED:
-                executeState_LOCKED();
-                break;
+                return executeState_LOCKED();
             default:
                 return;
         }
     }
 
-    const executeState_IDLE = () => {
+    function setState(newState) {
+        // console.log('set state to -> ' + newState);
+        state.current = newState;
+    }
+
+
+    function executeState_IDLE() {
         if (mouse.button[0] && !mouse.button[1] && !mouse.button[2]) {
             setState(states.DRAWING);
+            executeCurrentState();
             return;
         }
 
@@ -118,7 +117,7 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
         }
     }
 
-    const executeState_DRAWING = () => {
+    function executeState_DRAWING() {
         if (!mouse.button[0] && !mouse.button[1] && !mouse.button[2]) {
             setState(states.IDLE);
             return;
@@ -138,7 +137,7 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
 
 
 
-    const executeState_FILLING = () => {
+    function executeState_FILLING() {
         if (!mouse.button[0] && !mouse.button[1] && !mouse.button[2]) {
             const pos = screenToPixelCoords(mouse.pos.x, mouse.pos.y);
             if (!isWithinBounds(pos.x, pos.y)) return;
@@ -150,7 +149,7 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
         }
     }
 
-    const executeState_COLOR_PICKING = () => {
+    function executeState_COLOR_PICKING() {
         if (!mouse.button[1] && !mouse.button[0] && !mouse.button[2]) {
             if (drawingAppShared.paletteToolbar) {
                 const pos = screenToPixelCoords(mouse.pos.x, mouse.pos.y);
@@ -164,12 +163,11 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
         }
     }
 
-    const executeState_LOCKED = () => {
+    function executeState_LOCKED() {
         if (!mouse.button[0] && !mouse.button[1] && !mouse.button[2]) {
             setState(states.IDLE);
             return;
         }
-
     }
 
 
@@ -178,12 +176,12 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
     // Helper functions
     //--------------------------------
 
-    const screenToPixelCoords = (x, y) => {
+    function screenToPixelCoords(x, y) {
         return { x: ~~(x / pixelSize), y: ~~(y / pixelSize) };
     }
 
 
-    const drawLine = (point1, point2, color) => {
+    function drawLine(point1, point2, color) {
         const line = getLineBetween(point1, point2);
         for (let pixel of line) {
             setPixel(pixel.x, pixel.y, color);
@@ -192,7 +190,7 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
         render(line);
     }
 
-    const floodFill = (x, y, fillColor) => {
+    function floodFill(x, y, fillColor) {
 
         const oldColor = getPixel(x, y);
 
@@ -218,15 +216,15 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
                     queue.push(neighbor);
             }
         }
-        
+
         return updatedPixels;
     }
 
-    const isWithinBounds = (x, y) => {
+    function isWithinBounds(x, y) {
         return (x >= 0 && x < dimensions.width && y >= 0 && y < dimensions.height);
     }
 
-    const getNeighbors = (x, y) => {
+    function getNeighbors(x, y) {
         const neighborLeft = { x: x - 1, y: y };
         const neighborRight = { x: x + 1, y: y };
         const neighborUp = { x: x, y: y - 1 };
@@ -234,22 +232,22 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
         return [neighborLeft, neighborRight, neighborDown, neighborUp];
     }
 
-    const setPixel = (x, y, color) => {
+    function setPixel(x, y, color) {
         pixels[x + y * dimensions.width] = color;
     }
 
-    const getPixel = (x, y) => {
+    function getPixel(x, y) {
         return pixels[x + y * dimensions.width];
     }
 
 
-    const renderPixel = (x, y, ctx) => {
+    function renderPixel(x, y, ctx) {
         ctx.fillStyle = getPixel(x, y);
         ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
 
     }
 
-    const renderPixels = (pixelsArr, ctx) => {
+    function renderPixels(pixelsArr, ctx) {
         for (let pixel of pixelsArr) {
             renderPixel(pixel.x, pixel.y, ctx);
         }
@@ -270,15 +268,20 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
 
     }
 
+    // function clearCanvas() {
+    //     const ctx = canvasRef.current.getContext('2d');
+    //     ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    // }
+
 
 
     return (
-        <canvas
-            className="canvas"
-            id="canvas"
-            ref={canvasRef}
-            width={dimensions.width * pixelSize}
-            height={dimensions.height * pixelSize}
-        />
+            <canvas
+                className="canvas"
+                id="canvas"
+                ref={canvasRef}
+                width={dimensions.width * pixelSize}
+                height={dimensions.height * pixelSize}
+            />
     );
 }

@@ -60,11 +60,8 @@ export default class PaletteToolbar {
         this['fillPalette' + this.palette_number]();
         this.fillPaletteGreyScale();
 
-        this.global.setActiveColor = (color) => {
-            this.global.activeColor = color;
-        }
 
-        this.global.setActiveColor(this.getColorAt(this.selected_col, this.selected_row));
+        this.global.activeColor = this.getColorAt(this.selected_col, this.selected_row);
 
  
     }
@@ -143,12 +140,12 @@ export default class PaletteToolbar {
 
     //     if (e.deltaY < 0) {           // Scroll up
     //         this.selected_row = this.selected_row > 0 ? this.selected_row - 1 : 0;
-    //         this.global.setActiveColor(this.getColorAt(this.selected_col, this.selected_row));
+    //         this.global.activeColor = this.getColorAt(this.selected_col, this.selected_row);
     //         this.updateDisplay();
     //     }
     //     if (e.deltaY > 0) {           // Scroll down
     //         this.selected_row = this.selected_row < this.rows - 1 ? this.selected_row + 1 : this.rows - 1;
-    //         this.global.setActiveColor(this.getColorAt(this.selected_col, this.selected_row));
+    //         this.global.activeColor = this.getColorAt(this.selected_col, this.selected_row);
     //         this.updateDisplay();
     //     }
     // }
@@ -157,7 +154,7 @@ export default class PaletteToolbar {
     selectColorAtCursor() {
         this.selected_col = ~~(this.mouse_x / this.cell_width);
         this.selected_row = ~~(this.mouse_y / this.cell_height);
-        this.global.setActiveColor(this.getColorAt(this.selected_col, this.selected_row));
+        this.global.activeColor = this.getColorAt(this.selected_col, this.selected_row);
 
     }
     //-------------------------------------------------------------
@@ -277,7 +274,7 @@ export default class PaletteToolbar {
                     if (this.palette_array[i][j] === color) {
                         this.selected_col = i;
                         this.selected_row = j;
-                        this.global.setActiveColor(this.palette_array[i][j]);
+                        this.global.activeColor = this.palette_array[i][j];
                         this.updateDisplay();
                         return;
                     }
