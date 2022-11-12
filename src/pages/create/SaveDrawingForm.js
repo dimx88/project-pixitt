@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { useUploadDrawing } from '../../hooks/useUploadDrawing';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 // Utils
 import { downloadCanvas } from '../../utils/downloadCanvas';
@@ -14,24 +15,27 @@ import './SaveDrawingForm.css';
 
 
 
-export default function SaveDrawingForm({ canvasRef, pixelData }) {
+export default function SaveDrawingForm({ globals }) {
 
     const [drawingTitle, setDrawingTitle] = useState('');
     const [drawingInfo, setDrawingInfo] = useState('');
 
 
     const { user } = useAuthContext();
+    
     const nav = useNavigate();
 
     const { uploadDrawing, isPending } = useUploadDrawing('drawings');
 
+
+    
 
     const onSubmit = async (e) => {
         e.preventDefault();
 
         const drawingData = { drawingTitle, drawingInfo, thumbnailURL: '', uid: user.uid, createdBy: user.displayName };
 
-        await uploadDrawing(drawingData, canvasRef, 1);
+        await uploadDrawing(drawingData, globals.canvasRef, 1);
 
         nav('/gallery');
 
@@ -42,7 +46,7 @@ export default function SaveDrawingForm({ canvasRef, pixelData }) {
     }
 
 
-    if (!canvasRef) return (<div>Creating Canvas...</div>);
+    if (!globals.canvasRef) return (<h1>Creating Canvas...</h1>);
     return (
         <div className="save-drawing" onMouseLeave={loseFocus}>
             <div className="cover">
@@ -71,7 +75,7 @@ export default function SaveDrawingForm({ canvasRef, pixelData }) {
 
                 {!isPending && <button className="btn" onClick={onSubmit}>Save to Gallery</button>}
                 {isPending && <button className="btn" disabled>Saving...</button>}
-                {<button className="btn" onClick={() => downloadCanvas(canvasRef)}>Download Image</button>}
+                {<button className="btn" onClick={() => downloadCanvas(globals.canvasRef)}>Download Image</button>}
             </form>
 
         </div>

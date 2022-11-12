@@ -1,5 +1,5 @@
 // Hooks
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 
 
 
@@ -16,13 +16,10 @@ export default function Create() {
 
     console.log('created rendered');
 
-    const [canvasRef, setCanvasRef] = useState(null);
+    // const [globals, setGlobals] = useState({paletteToolbar: null, canvasRef: null, undoManager: null});
 
-    const [paletteRef, setPaletteRef] = useState(null);
-
-    const [appGlobals, setAppGlobals] = useState({paletteToolbar: null, canvasRef: null, undoManager: null});
-
-    const drawingAppShared = useRef({paletteToolbar: null});
+    // const globals = useRef({paletteToolbar: null, canvasRef: null, undoManager: null});
+    const [globals, setGlobals] = useState({paletteToolbar: null, canvasRef: null, undoManager: null});
 
 
 
@@ -30,10 +27,10 @@ export default function Create() {
 
     return (
         <div className="drawing-app">
-            <Palette drawingAppShared={drawingAppShared.current} setPaletteRef={setPaletteRef} appGlobals={appGlobals} setAppGlobals={setAppGlobals} />
+            <Palette globals={globals} setGlobals={setGlobals}/>
             <div className="canvas-saveform">
-                <Canvas setCanvasRef={setCanvasRef} drawingAppShared={drawingAppShared.current} paletteRef={paletteRef} appGlobals={appGlobals} setAppGlobals={setAppGlobals}/>
-                <SaveDrawingForm canvasRef={canvasRef} drawingAppShared={drawingAppShared.current} appGlobals={appGlobals} setAppGlobals={setAppGlobals} />
+                <Canvas  globals={globals} setGlobals={setGlobals}/>
+                <SaveDrawingForm  globals={globals} setGlobals={setGlobals}/>
 
             </div>
         </div>

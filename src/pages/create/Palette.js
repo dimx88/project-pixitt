@@ -6,15 +6,18 @@ import PaletteToolbar from "../../utils/paletteToolbar";
 // Styles
 import './Palette.css';
 
-export default function Palette({ drawingAppShared, setPaletteRef }) {
+export default function Palette({ globals, setGlobals }) {
 
     let paletteToolbar;
     const paletteCanvasRef = useRef(null);
 
     useEffect(() => {
         paletteToolbar = new PaletteToolbar(paletteCanvasRef.current, window);
-        drawingAppShared.paletteToolbar = paletteToolbar;
-        setPaletteRef(paletteToolbar);
+        setGlobals({...globals, paletteToolbar});
+
+        return () => {
+            paletteToolbar.removeListeners();
+        }
     }, [])
 
     return (

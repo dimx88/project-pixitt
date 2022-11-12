@@ -11,7 +11,7 @@ import './Canvas.css';
 
 
 
-export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
+export default function Canvas({ globals, setGlobals }) {
 
     console.log('canvas rendered');
     
@@ -40,7 +40,7 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
 
     useEffect(() => {
         // Pass reference of the drawing canvas element to the parent component 
-        setCanvasRef(canvasRef.current);
+        setGlobals({...globals, canvasRef: canvasRef.current});
 
         // Mouse util -> add listeners and offset the coordinates relative to the drawing canvas element
         mouse.follow(canvasRef.current);
@@ -60,7 +60,7 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
             mouse.removeListeners();
         };
 
-    }, [setCanvasRef, mouse, executeCurrentStateRef]);
+    }, [mouse, executeCurrentStateRef]);
 
     if (canvasRef.current) {
         render();
@@ -151,10 +151,10 @@ export default function Canvas({ setCanvasRef, drawingAppShared, paletteRef }) {
 
     function executeState_COLOR_PICKING() {
         if (!mouse.button[1] && !mouse.button[0] && !mouse.button[2]) {
-            if (drawingAppShared.paletteToolbar) {
+            if (globals.paletteToolbar) {
                 const pos = screenToPixelCoords(mouse.pos.x, mouse.pos.y);
 
-                drawingAppShared.paletteToolbar.getCellByColor(getPixel(pos.x, pos.y));
+                globals.paletteToolbar.getCellByColor(getPixel(pos.x, pos.y));
             }
 
 
