@@ -14,53 +14,54 @@ import './Canvas.css';
 export default function Canvas({ globals, setGlobals }) {
 
     console.log('canvas rendered');
-    
-    
+
+
     // Setup
     //-----------------------------------------------------
-    
+
     const canvasRef = useRef(null);
     // const ctx = canvasRef.current ? canvasRef.current.getContext('2d') : null;
-    
+
     const dimensions = { width: 96, height: 64 };
     const pixelSize = 12;
     const defaultBackgroundColor = '#666666';
     // const pixels = new Array(dimensions.width * dimensions.height).fill(defaultBackgroundColor);
     const pixels = useRef(new Array(dimensions.width * dimensions.height).fill(defaultBackgroundColor)).current;
-    
-    
+
     const mouse = useRef(new Mouse(null, true)).current;
-    
-    // const executeCurrentStateRef = useRef();
-    // executeCurrentStateRef.current = executeCurrentState;
-    const executeCurrentStateRef = useRef(executeCurrentState).current;
+
+    const executeCurrentStateRef = useRef();
+    executeCurrentStateRef.current = executeCurrentState;
 
 
     //-----------------------------------------------------
 
     useEffect(() => {
         // Pass reference of the drawing canvas element to the parent component 
-        setGlobals({...globals, canvasRef: canvasRef.current});
+        setGlobals(prev => ({ ...prev, canvasRef: canvasRef.current }));
+  
+
+        const executeCurrentStateWrapper = executeCurrentStateRef.current;
+
 
         // Mouse util -> add listeners and offset the coordinates relative to the drawing canvas element
         mouse.follow(canvasRef.current);
 
         // Add listeners
-        document.addEventListener('mousedown', executeCurrentStateRef);
-        document.addEventListener('mouseup', executeCurrentStateRef);
-        document.addEventListener('mousemove', executeCurrentStateRef);
-
+        document.addEventListener('mousedown', executeCurrentStateWrapper);
+        document.addEventListener('mouseup', executeCurrentStateWrapper);
+        document.addEventListener('mousemove', executeCurrentStateWrapper);
 
 
         // Cleanup
         return () => {
-            document.removeEventListener('mousedown', executeCurrentStateRef);
-            document.removeEventListener('mouseup', executeCurrentStateRef);
-            document.removeEventListener('mousemove', executeCurrentStateRef);
+            document.removeEventListener('mousedown', executeCurrentStateWrapper);
+            document.removeEventListener('mouseup', executeCurrentStateWrapper);
+            document.removeEventListener('mousemove', executeCurrentStateWrapper);
             mouse.removeListeners();
         };
 
-    }, [mouse, executeCurrentStateRef]);
+    }, [mouse, setGlobals, globals.paletteToolbar]);
 
     if (canvasRef.current) {
         render();
@@ -68,7 +69,6 @@ export default function Canvas({ globals, setGlobals }) {
 
     // State machine
     // ---------------------------------------
-
 
 
     const states = { IDLE: 'IDLE', DRAWING: 'DRAWING', FILLING: 'FILLING', COLOR_PICKING: 'COLOR_PICKING', LOCKED: 'LOCKED' };
@@ -96,6 +96,7 @@ export default function Canvas({ globals, setGlobals }) {
     function setState(newState) {
         // console.log('set state to -> ' + newState);
         state.current = newState;
+        // console.log(globals);
     }
 
 
@@ -132,7 +133,7 @@ export default function Canvas({ globals, setGlobals }) {
         const prevPos = screenToPixelCoords(mouse.prevPos.x, mouse.prevPos.y);
 
         if (isWithinBounds(pos.x, pos.y) && isWithinBounds(prevPos.x, prevPos.y))
-            drawLine(prevPos, pos, window.activeColor);
+            drawLine(prevPos, pos, globals.paletteToolbar.activeColor);
     }
 
 
@@ -142,7 +143,7 @@ export default function Canvas({ globals, setGlobals }) {
             const pos = screenToPixelCoords(mouse.pos.x, mouse.pos.y);
             if (!isWithinBounds(pos.x, pos.y)) return;
 
-            const floodedPixels = floodFill(pos.x, pos.y, window.activeColor);
+            const floodedPixels = floodFill(pos.x, pos.y, globals.paletteToolbar.activeColor);
             render(floodedPixels);
             setState(states.IDLE);
             return;
@@ -253,6 +254,8 @@ export default function Canvas({ globals, setGlobals }) {
         }
     }
 
+
+ 
     function render(pixelsArr) {
         const ctx = canvasRef.current.getContext('2d');
 
@@ -276,12 +279,12 @@ export default function Canvas({ globals, setGlobals }) {
 
 
     return (
-            <canvas
-                className="canvas"
-                id="canvas"
-                ref={canvasRef}
-                width={dimensions.width * pixelSize}
-                height={dimensions.height * pixelSize}
-            />
+        <canvas
+            className="canvas"
+            id="canvas"
+            ref={canvasRef}
+            width={dimensions.width * pixelSize}
+            height={dimensions.height * pixelSize}
+        />
     );
 }

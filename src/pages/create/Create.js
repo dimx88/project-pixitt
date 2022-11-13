@@ -12,6 +12,7 @@ import Palette from './Palette';
 import './Create.css';
 
 
+
 export default function Create() {
 
     console.log('created rendered');
@@ -20,9 +21,6 @@ export default function Create() {
 
     // const globals = useRef({paletteToolbar: null, canvasRef: null, undoManager: null});
     const [globals, setGlobals] = useState({paletteToolbar: null, canvasRef: null, undoManager: null});
-
-
-
 
 
     return (

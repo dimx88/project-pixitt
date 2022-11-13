@@ -1,17 +1,31 @@
 import ColorCycler from "./colorCycler";
 
+
+
 // Alert! Very old and messy code
 
 export default class PaletteToolbar {
-    constructor(canvasRef, global = window) {
 
+    static instance = null;
+
+    constructor(canvasRef = null) {
+
+
+        // Singleton
+        // if (PaletteToolbar.instance) {
+        //     return PaletteToolbar.instance;
+        // } else {
+        //     PaletteToolbar.instance = this;
+        // }
+
+        // const rgb = '#' + Math.floor(Math.random() * 16777215).toString(16);
+        // this.sonar = setInterval(() => console.log('%cBleep from palette', `color: ${rgb}; `), 2000);
         this.canvas = canvasRef;
         this.global = global;
-        this.ctx = this.canvas.getContext('2d');
+        this.ctx = canvasRef ? this.canvas.getContext('2d') : null;
 
         this.colorCycler = new ColorCycler(0, 100, 50, -14, 0, 0);
         this.colorCyclerGrayscale = new ColorCycler(0, 0, 0, 0, 0, 1.3);
-
         this.palette_array = null;
         this.rows = 16;
         this.columns = 30;
@@ -19,8 +33,8 @@ export default class PaletteToolbar {
         this.palette_number = 1;
         this.number_of_palettes = 3;
 
-        this.cell_width = this.canvas.width / this.columns;
-        this.cell_height = this.canvas.height / this.rows;
+        this.cell_width = canvasRef ? this.canvas.width / this.columns : 0;
+        this.cell_height = canvasRef ? this.canvas.height / this.rows : 0;
 
         this.selected_col = 25;
         this.selected_row = 0;
@@ -38,6 +52,7 @@ export default class PaletteToolbar {
         this.selected_line_color = '#ffffff';
 
 
+
         // Make local bindings so we can remove them later
 
         this._onMouseDown = this.onMouseDown.bind(this);
@@ -45,12 +60,23 @@ export default class PaletteToolbar {
         this._onMouseMove = this.onMouseMove.bind(this);
         this._onContextMenu = this.onContextMenu.bind(this);
         // this._onMouseWheel = this.onMouseWheel.bind(this);
+        if (canvasRef) {
+            this.addListeners();
+            this.initialize();
+            this.updateDisplay();
+        }
+
+    }
+
+
+    setCanvasAndRun(canvasRef) {
+        this.canvas = canvasRef;
+        this.ctx = this.canvas.getContext('2d');
+        this.cell_width = this.canvas.width / this.columns;
+        this.cell_height = this.canvas.height / this.rows;
         this.addListeners();
-
-
         this.initialize();
-        this.updateDisplay();
-
+        this.updateDisplay()
     }
 
     // --------------------------------------------------------------
@@ -61,9 +87,9 @@ export default class PaletteToolbar {
         this.fillPaletteGreyScale();
 
 
-        this.global.activeColor = this.getColorAt(this.selected_col, this.selected_row);
+        this.activeColor = this.getColorAt(this.selected_col, this.selected_row);
 
- 
+
     }
 
     //------------------------------------------------------------
@@ -76,10 +102,12 @@ export default class PaletteToolbar {
     }
     //------------------------------------------------------------
     removeListeners() {
+
         window.removeEventListener('mousedown', this._onMouseDown);
         window.removeEventListener('mouseup', this._onMouseUp);
         window.removeEventListener('mousemove', this._onMouseMove);
         // window.removeEventListener('mousewheel', this._onMouseWheel);
+        clearInterval(this.sonar);
     }
 
     onContextMenu(e) {
@@ -140,12 +168,12 @@ export default class PaletteToolbar {
 
     //     if (e.deltaY < 0) {           // Scroll up
     //         this.selected_row = this.selected_row > 0 ? this.selected_row - 1 : 0;
-    //         this.global.activeColor = this.getColorAt(this.selected_col, this.selected_row);
+    //         this.activeColor = this.getColorAt(this.selected_col, this.selected_row);
     //         this.updateDisplay();
     //     }
     //     if (e.deltaY > 0) {           // Scroll down
     //         this.selected_row = this.selected_row < this.rows - 1 ? this.selected_row + 1 : this.rows - 1;
-    //         this.global.activeColor = this.getColorAt(this.selected_col, this.selected_row);
+    //         this.activeColor = this.getColorAt(this.selected_col, this.selected_row);
     //         this.updateDisplay();
     //     }
     // }
@@ -154,7 +182,7 @@ export default class PaletteToolbar {
     selectColorAtCursor() {
         this.selected_col = ~~(this.mouse_x / this.cell_width);
         this.selected_row = ~~(this.mouse_y / this.cell_height);
-        this.global.activeColor = this.getColorAt(this.selected_col, this.selected_row);
+        this.activeColor = this.getColorAt(this.selected_col, this.selected_row);
 
     }
     //-------------------------------------------------------------
@@ -274,7 +302,7 @@ export default class PaletteToolbar {
                     if (this.palette_array[i][j] === color) {
                         this.selected_col = i;
                         this.selected_row = j;
-                        this.global.activeColor = this.palette_array[i][j];
+                        this.activeColor = this.palette_array[i][j];
                         this.updateDisplay();
                         return;
                     }

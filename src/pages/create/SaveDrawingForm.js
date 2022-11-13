@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { useUploadDrawing } from '../../hooks/useUploadDrawing';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+
 
 // Utils
 import { downloadCanvas } from '../../utils/downloadCanvas';
@@ -15,7 +15,7 @@ import './SaveDrawingForm.css';
 
 
 
-export default function SaveDrawingForm({ globals }) {
+export default function SaveDrawingForm({ globals, setGlobals }) {
 
     const [drawingTitle, setDrawingTitle] = useState('');
     const [drawingInfo, setDrawingInfo] = useState('');
@@ -28,7 +28,7 @@ export default function SaveDrawingForm({ globals }) {
     const { uploadDrawing, isPending } = useUploadDrawing('drawings');
 
 
-    
+
 
     const onSubmit = async (e) => {
         e.preventDefault();
