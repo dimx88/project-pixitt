@@ -7,6 +7,9 @@ import { useState } from 'react';
 import Canvas from './Canvas';
 import SaveDrawingForm from './SaveDrawingForm';
 import Palette from './Palette';
+import { useRef } from 'react';
+
+import UndoManager from './undoManager';
 
 // Styles
 import './Create.css';
@@ -20,7 +23,10 @@ export default function Create() {
     // const [globals, setGlobals] = useState({paletteToolbar: null, canvasRef: null, undoManager: null});
 
     // const globals = useRef({paletteToolbar: null, canvasRef: null, undoManager: null});
-    const [globals, setGlobals] = useState({paletteToolbar: null, canvasRef: null, undoManager: null});
+    const undoManager = useRef();
+    if (!undoManager.current) undoManager.current = new UndoManager();
+
+    const [globals, setGlobals] = useState({paletteToolbar: null, canvasRef: null, undoManager: undoManager.current});
 
 
     return (

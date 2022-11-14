@@ -26,7 +26,7 @@ export default function Canvas({ globals, setGlobals }) {
     const pixelSize = 12;
     const defaultBackgroundColor = '#666666';
     // const pixels = new Array(dimensions.width * dimensions.height).fill(defaultBackgroundColor);
-    const pixels = useRef(new Array(dimensions.width * dimensions.height).fill(defaultBackgroundColor)).current;
+    let pixels = useRef(new Array(dimensions.width * dimensions.height).fill(defaultBackgroundColor)).current;
 
     const mouse = useRef(new Mouse(null, true)).current;
 
@@ -39,7 +39,10 @@ export default function Canvas({ globals, setGlobals }) {
     useEffect(() => {
         // Pass reference of the drawing canvas element to the parent component 
         setGlobals(prev => ({ ...prev, canvasRef: canvasRef.current }));
-  
+
+        // Don't create event listeners until we have a reference to the palette and undo manager
+        if (!globals.paletteToolbar || !globals.undoManager) return;
+
 
         const executeCurrentStateWrapper = executeCurrentStateRef.current;
 
@@ -47,21 +50,34 @@ export default function Canvas({ globals, setGlobals }) {
         // Mouse util -> add listeners and offset the coordinates relative to the drawing canvas element
         mouse.follow(canvasRef.current);
 
+        const undo = (e) => {
+            if (e.code === 'KeyZ') { 
+                pixels = globals.undoManager.undo(pixels);
+                clearCanvas();
+                render(); 
+            }
+        }
+
         // Add listeners
+        document.addEventListener('keydown', undo);
+
         document.addEventListener('mousedown', executeCurrentStateWrapper);
         document.addEventListener('mouseup', executeCurrentStateWrapper);
         document.addEventListener('mousemove', executeCurrentStateWrapper);
 
 
+
         // Cleanup
         return () => {
+            document.removeEventListener('keydown', undo);
+
             document.removeEventListener('mousedown', executeCurrentStateWrapper);
             document.removeEventListener('mouseup', executeCurrentStateWrapper);
             document.removeEventListener('mousemove', executeCurrentStateWrapper);
             mouse.removeListeners();
         };
 
-    }, [mouse, setGlobals, globals.paletteToolbar]);
+    }, [mouse, setGlobals, globals.paletteToolbar, globals.undoManager]);
 
     if (canvasRef.current) {
         render();
@@ -102,6 +118,7 @@ export default function Canvas({ globals, setGlobals }) {
 
     function executeState_IDLE() {
         if (mouse.button[0] && !mouse.button[1] && !mouse.button[2]) {
+            globals.undoManager.takeSnapshot(pixels);
             setState(states.DRAWING);
             executeCurrentState();
             return;
@@ -143,6 +160,7 @@ export default function Canvas({ globals, setGlobals }) {
             const pos = screenToPixelCoords(mouse.pos.x, mouse.pos.y);
             if (!isWithinBounds(pos.x, pos.y)) return;
 
+            globals.undoManager.takeSnapshot(pixels);
             const floodedPixels = floodFill(pos.x, pos.y, globals.paletteToolbar.activeColor);
             render(floodedPixels);
             setState(states.IDLE);
@@ -255,7 +273,7 @@ export default function Canvas({ globals, setGlobals }) {
     }
 
 
- 
+
     function render(pixelsArr) {
         const ctx = canvasRef.current.getContext('2d');
 
@@ -271,10 +289,10 @@ export default function Canvas({ globals, setGlobals }) {
 
     }
 
-    // function clearCanvas() {
-    //     const ctx = canvasRef.current.getContext('2d');
-    //     ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-    // }
+    function clearCanvas() {
+        const ctx = canvasRef.current.getContext('2d');
+        ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    }
 
 
 
