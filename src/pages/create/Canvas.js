@@ -156,6 +156,10 @@ export default function Canvas({ globals, setGlobals }) {
 
 
     function executeState_FILLING() {
+        if (mouse.button[0] || mouse.button[1]) {
+            setState(states.LOCKED);
+            return;
+        }
         if (!mouse.button[0] && !mouse.button[1] && !mouse.button[2]) {
             const pos = screenToPixelCoords(mouse.pos.x, mouse.pos.y);
             if (!isWithinBounds(pos.x, pos.y)) return;

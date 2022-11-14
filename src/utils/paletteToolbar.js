@@ -312,6 +312,7 @@ export default class PaletteToolbar {
             this.switchPalette();
 
         }
+        this.activeColor = color;
         console.log('Color not found inside palette');
     }
     //-------------------------------------------------------------
