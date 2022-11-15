@@ -5,7 +5,7 @@ import Home from "./pages/home/Home";
 import Gallery from "./pages/gallery/Gallery";
 import Login from "./pages/login/Login";
 import Signup from "./pages/signup/Signup";
-import Create from "./pages/create/Create";
+import DrawingApp from "./pages/create/DrawingApp";
 import Drawing from "./pages/Drawing/Drawing";
 import Canvas from "./pages/create/Canvas";
 
@@ -39,7 +39,7 @@ function App() {
           <Route path="/signup" element={!user ? (<Signup />) : (<Navigate to='/' replace />)} />
 
           {/* <Route path="/create" element={user ? (<Canvas />) : (<Navigate to='/login' replace />)} /> */}
-          <Route path="/create" element={user ? (<Create />) : (<Navigate to='/login' replace />)} />
+          <Route path="/create" element={user ? (<DrawingApp />) : (<Navigate to='/login' replace />)} />
 
           <Route path="*" element={<Navigate to='/' replace />} />
         </Routes>

@@ -1,5 +1,4 @@
 // Hooks
-import { useState } from 'react';
 
 import { useGlobals } from '../../hooks/useGlobals';
 
@@ -16,7 +15,7 @@ import './Create.css';
 
 
 
-export default function Create() {
+export default function DrawingApp() {
 
     console.log('created rendered');
 

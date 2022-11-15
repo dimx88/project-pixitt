@@ -15,14 +15,14 @@ import './SaveDrawingForm.css';
 
 
 
-export default function SaveDrawingForm({ globals, setGlobals }) {
+export default function SaveDrawingForm({ globals }) {
 
     const [drawingTitle, setDrawingTitle] = useState('');
     const [drawingInfo, setDrawingInfo] = useState('');
 
 
     const { user } = useAuthContext();
-    
+
     const nav = useNavigate();
 
     const { uploadDrawing, isPending } = useUploadDrawing('drawings');
@@ -35,7 +35,7 @@ export default function SaveDrawingForm({ globals, setGlobals }) {
 
         const drawingData = { drawingTitle, drawingInfo, thumbnailURL: '', uid: user.uid, createdBy: user.displayName };
 
-        await uploadDrawing(drawingData, globals.canvasRef, 1);
+        await uploadDrawing(drawingData, globals.get.canvasRef, 1);
 
         nav('/gallery');
 
@@ -46,12 +46,12 @@ export default function SaveDrawingForm({ globals, setGlobals }) {
     }
 
 
-    if (!globals.canvasRef) return (<h1>Creating Canvas...</h1>);
+    if (!globals.get.canvasRef) return (<h1>Creating Canvas...</h1>);
     return (
         <div className="save-drawing" onMouseLeave={loseFocus}>
             <div className="cover">
-                <h2>Save&#10140;</h2>    
-            </div>   
+                <h2>Save&#10140;</h2>
+            </div>
             <form onSubmit={onSubmit}>
                 <h2>Save your Drawing</h2>
                 <label>

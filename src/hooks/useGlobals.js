@@ -6,9 +6,9 @@ export const useGlobals = (initialParams = {}) => {
   const globals = useRef({
     get: initialParams,
     set: (key, value) => {
-      console.log(`Globals: set ${key} to ${value}`);
-      globals.get[key] = value;
-      forceRender("");
+        globals.get[key] = value;
+        forceRender("");
+        //   console.log(`Globals: set ${key} to ${value}`);
     }
   }).current;
 
