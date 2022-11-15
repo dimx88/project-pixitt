@@ -1,9 +1,13 @@
 
 import { useEffect, useRef } from 'react';
 
+
 // Utils
 import Mouse from '../../utils/mouse';
 import getLineBetween from '../../utils/getLine';
+
+// Drawing tools
+import { freehandTool } from './tools/freehandTool';
 
 //  Styles
 import './Canvas.css';
@@ -11,7 +15,7 @@ import './Canvas.css';
 
 
 
-export default function Canvas({ globals, setGlobals }) {
+export default function Canvas({ globals, setGlobals, globs }) {
 
     console.log('canvas rendered');
 
@@ -34,13 +38,29 @@ export default function Canvas({ globals, setGlobals }) {
     executeCurrentStateRef.current = executeCurrentState;
 
 
+    // Tools setup
+    const toolsRef = useRef();
+    const canvasFunctions = {
+        screenToPixelCoords,
+        isWithinBounds,
+        drawLine,
+        setPixel,
+        getPixel
+    };
+    if (!toolsRef.current) {
+        toolsRef.current = { freehand: freehandTool(canvasFunctions, mouse, globals) };
+    }
+
     //-----------------------------------------------------
 
     useEffect(() => {
         // Pass reference of the drawing canvas element to the parent component 
+        // if (!globs.get.canvsRef) globs.set('canvasRef', canvasRef.current); 
         setGlobals(prev => ({ ...prev, canvasRef: canvasRef.current }));
 
+
         // Don't create event listeners until we have a reference to the palette and undo manager
+        // if (!globs.get.paletteToolbar || !globs.get.undoManager) return;    
         if (!globals.paletteToolbar || !globals.undoManager) return;
 
 
@@ -51,12 +71,15 @@ export default function Canvas({ globals, setGlobals }) {
         mouse.follow(canvasRef.current);
 
         const undo = (e) => {
-            if (e.code === 'KeyZ') { 
+            if (e.code === 'KeyZ') {
+                // pixels = globs.get.undoManager.undo(pixels);
                 pixels = globals.undoManager.undo(pixels);
                 clearCanvas();
-                render(); 
+                render();
             }
         }
+
+
 
         // Add listeners
         document.addEventListener('keydown', undo);
@@ -77,6 +100,7 @@ export default function Canvas({ globals, setGlobals }) {
             mouse.removeListeners();
         };
 
+    // }, [mouse, globs.get.paletteToolbar, globs.get.undoManager]);
     }, [mouse, setGlobals, globals.paletteToolbar, globals.undoManager]);
 
     if (canvasRef.current) {
@@ -91,7 +115,11 @@ export default function Canvas({ globals, setGlobals }) {
     const state = { current: states.IDLE };
 
 
-    function executeCurrentState() {
+    function executeCurrentState(e) {
+        toolsRef.current.freehand.onEvent(e);
+        // toolsRef.current.freehandTool.onEvent(e);
+        return;
+
         // console.log('executing ', state.current, Math.random().toFixed(4));
         switch (state.current) {
             case states.IDLE:
@@ -112,12 +140,12 @@ export default function Canvas({ globals, setGlobals }) {
     function setState(newState) {
         // console.log('set state to -> ' + newState);
         state.current = newState;
-        // console.log(globals);
     }
 
 
     function executeState_IDLE() {
         if (mouse.button[0] && !mouse.button[1] && !mouse.button[2]) {
+            // globs.get.undoManager.takeSnapshot(pixels);
             globals.undoManager.takeSnapshot(pixels);
             setState(states.DRAWING);
             executeCurrentState();
@@ -204,7 +232,7 @@ export default function Canvas({ globals, setGlobals }) {
     }
 
 
-    function drawLine(point1, point2, color) {
+    function drawLine(point1, point2, color=globals.paletteToolbar.activeColor) {
         const line = getLineBetween(point1, point2);
         for (let pixel of line) {
             setPixel(pixel.x, pixel.y, color);

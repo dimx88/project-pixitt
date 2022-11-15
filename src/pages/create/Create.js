@@ -1,7 +1,7 @@
 // Hooks
 import { useState } from 'react';
 
-
+import { useGlobals } from '../../hooks/useGlobals';
 
 // Componenets
 import Canvas from './Canvas';
@@ -26,15 +26,16 @@ export default function Create() {
     const undoManager = useRef();
     if (!undoManager.current) undoManager.current = new UndoManager();
 
-    const [globals, setGlobals] = useState({paletteToolbar: null, canvasRef: null, undoManager: undoManager.current});
+    const [globals, setGlobals] = useState({ paletteToolbar: null, canvasRef: null, undoManager: undoManager.current });
+    const { globals: globs } = useGlobals({ paletteToolbar: null, canvasRef: null, undoManager: undoManager.current })
 
 
     return (
         <div className="drawing-app">
-            <Palette globals={globals} setGlobals={setGlobals}/>
+            <Palette globals={globals} setGlobals={setGlobals} globs={globs} />
             <div className="canvas-saveform">
-                <Canvas  globals={globals} setGlobals={setGlobals}/>
-                <SaveDrawingForm  globals={globals} setGlobals={setGlobals}/>
+                <Canvas globals={globals} setGlobals={setGlobals} globs={globs} />
+                <SaveDrawingForm globals={globals} setGlobals={setGlobals} globs={globs} />
 
             </div>
         </div>
