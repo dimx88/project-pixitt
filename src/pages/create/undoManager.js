@@ -30,4 +30,8 @@ export default class UndoManager {
             return current;
         }
     }
+
+    canUndo() {
+        return this.history.length > 0;
+    }
 }

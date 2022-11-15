@@ -29,13 +29,14 @@ export default function Canvas({ globals }) {
     const dimensions = { width: 96, height: 64 };
     const pixelSize = 12;
     const defaultBackgroundColor = '#666666';
-    // const pixels = new Array(dimensions.width * dimensions.height).fill(defaultBackgroundColor);
-    let pixels = useRef(new Array(dimensions.width * dimensions.height).fill(defaultBackgroundColor)).current;
+
+    // let pixels = useRef(new Array(dimensions.width * dimensions.height).fill(defaultBackgroundColor)).current;
+    const pixelsRef = useRef();
+    if (!pixelsRef.current) pixelsRef.current = new Array(dimensions.width * dimensions.height).fill(defaultBackgroundColor);
 
     const mouse = useRef(new Mouse(null, true)).current;
 
-    const executeCurrentStateRef = useRef();
-    executeCurrentStateRef.current = executeCurrentState;
+
 
 
     // Tools setup
@@ -48,11 +49,15 @@ export default function Canvas({ globals }) {
         getPixel
     };
     if (!toolsRef.current) {
-        toolsRef.current = { freehand: freehandTool(canvasFunctions, mouse, globals) };
+        toolsRef.current = { freehand: freehandTool(canvasFunctions, pixelsRef, mouse, globals) };
     }
 
     //-----------------------------------------------------
-
+    const executeCurrentStateRef = useRef();
+    executeCurrentStateRef.current = executeCurrentState;
+    const renderRef = useRef();
+    renderRef.current = render;
+    //--------------------------------------------------------
     useEffect(() => {
         // Pass reference of the drawing canvas element to the parent component 
         if (!globals.get.canvsRef) globals.set('canvasRef', canvasRef.current); 
@@ -70,9 +75,9 @@ export default function Canvas({ globals }) {
 
         const undo = (e) => {
             if (e.code === 'KeyZ') {
-                pixels = globals.get.undoManager.undo(pixels);
-                clearCanvas();
-                render();
+                // if (!globals.get.undoManager.canUndo()) return;
+                pixelsRef.current = globals.get.undoManager.undo(pixelsRef.current);
+                renderRef.current(null ,true);
             }
         }
 
@@ -97,8 +102,7 @@ export default function Canvas({ globals }) {
             mouse.removeListeners();
         };
 
-    // }, [mouse, globs]);
-    }, [mouse, globals.get.paletteToolbar, globals.get.undoManager]);
+    }, [mouse, globals.get.paletteToolbar, globals.get.undoManager, globals]);
 
     if (canvasRef.current) {
         render();
@@ -114,10 +118,10 @@ export default function Canvas({ globals }) {
 
     function executeCurrentState(e) {
         toolsRef.current.freehand.onEvent(e);
-        // toolsRef.current.freehandTool.onEvent(e);
-        return;
 
         // console.log('executing ', state.current, Math.random().toFixed(4));
+        return;
+        // eslint-disable-next-line
         switch (state.current) {
             case states.IDLE:
                 return executeState_IDLE();
@@ -142,7 +146,7 @@ export default function Canvas({ globals }) {
 
     function executeState_IDLE() {
         if (mouse.button[0] && !mouse.button[1] && !mouse.button[2]) {
-            globals.get.undoManager.takeSnapshot(pixels);
+            globals.get.undoManager.takeSnapshot(pixelsRef.current);
             setState(states.DRAWING);
             executeCurrentState();
             return;
@@ -188,7 +192,7 @@ export default function Canvas({ globals }) {
             const pos = screenToPixelCoords(mouse.pos.x, mouse.pos.y);
             if (!isWithinBounds(pos.x, pos.y)) return;
 
-            globals.get.undoManager.takeSnapshot(pixels);
+            globals.get.undoManager.takeSnapshot(pixelsRef.current);
             const floodedPixels = floodFill(pos.x, pos.y, globals.get.paletteToolbar.activeColor);
             render(floodedPixels);
             setState(states.IDLE);
@@ -280,11 +284,11 @@ export default function Canvas({ globals }) {
     }
 
     function setPixel(x, y, color) {
-        pixels[x + y * dimensions.width] = color;
+        pixelsRef.current[x + y * dimensions.width] = color;
     }
 
     function getPixel(x, y) {
-        return pixels[x + y * dimensions.width];
+        return pixelsRef.current[x + y * dimensions.width];
     }
 
 
@@ -302,14 +306,16 @@ export default function Canvas({ globals }) {
 
 
 
-    function render(pixelsArr) {
+    function render(pixelsArr, shouldClear) {
         const ctx = canvasRef.current.getContext('2d');
+
+        if (shouldClear) {clearCanvas()};
 
         if (pixelsArr) {
             return renderPixels(pixelsArr, ctx);
         }
 
-        for (let i = 0; i < pixels.length; i++) {
+        for (let i = 0; i < pixelsRef.current.length; i++) {
             const x = i % dimensions.width;
             const y = ~~(i / dimensions.width);
             renderPixel(x, y, ctx);

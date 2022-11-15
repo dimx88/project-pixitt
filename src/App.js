@@ -7,7 +7,6 @@ import Login from "./pages/login/Login";
 import Signup from "./pages/signup/Signup";
 import DrawingApp from "./pages/create/DrawingApp";
 import Drawing from "./pages/Drawing/Drawing";
-import Canvas from "./pages/create/Canvas";
 
 // Hooks 
 import { useAuthContext } from "./hooks/useAuthContext";
