@@ -27,7 +27,7 @@ export default function Palette({ globals, setGlobals }) {
         paletteToolbar.setCanvasAndRun(paletteCanvasRef.current);  // Method 1
         // paletteToolbarRef.current.setCanvasAndRun(paletteCanvasRef.current); // Method 2
 
-        setGlobals((prev) => ({ ...prev, paletteToolbar}));  // Method 1
+        globals.set('paletteToolbar', paletteToolbar);  // Method 1
         // setGlobals((prev) => ({ ...prev, paletteToolbar: paletteToolbarRef.current }));  // Method 2
 
 
@@ -37,7 +37,7 @@ export default function Palette({ globals, setGlobals }) {
             paletteToolbar.removeListeners();  // Method 1
             // paletteToolbarRef.current.removeListeners(); // Method 2
         }
-    }, [setGlobals]);
+    }, [globals]);
 
     return (
         <canvas className="palette" width="500px" height="180px" ref={paletteCanvasRef}>

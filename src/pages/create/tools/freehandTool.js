@@ -20,7 +20,7 @@ export function freehandTool(canvasFunctions, mouse, globals) {
             const prevPos = canvasFunctions.screenToPixelCoords(mouse.prevPos.x, mouse.prevPos.y);
 
             if (canvasFunctions.isWithinBounds(pos.x, pos.y) && canvasFunctions.isWithinBounds(prevPos.x, prevPos.y)) {
-                canvasFunctions.drawLine(prevPos, pos, '#333333');
+                canvasFunctions.drawLine(prevPos, pos, globals.get.paletteToolbar.activeColor);
             }
         }
 

@@ -15,7 +15,7 @@ import './Canvas.css';
 
 
 
-export default function Canvas({ globals, setGlobals, globs }) {
+export default function Canvas({ globals }) {
 
     console.log('canvas rendered');
 
@@ -55,13 +55,11 @@ export default function Canvas({ globals, setGlobals, globs }) {
 
     useEffect(() => {
         // Pass reference of the drawing canvas element to the parent component 
-        // if (!globs.get.canvsRef) globs.set('canvasRef', canvasRef.current); 
-        setGlobals(prev => ({ ...prev, canvasRef: canvasRef.current }));
+        if (!globals.get.canvsRef) globals.set('canvasRef', canvasRef.current); 
 
 
         // Don't create event listeners until we have a reference to the palette and undo manager
-        // if (!globs.get.paletteToolbar || !globs.get.undoManager) return;    
-        if (!globals.paletteToolbar || !globals.undoManager) return;
+        if (!globals.get.paletteToolbar || !globals.get.undoManager) return;    
 
 
         const executeCurrentStateWrapper = executeCurrentStateRef.current;
@@ -72,8 +70,7 @@ export default function Canvas({ globals, setGlobals, globs }) {
 
         const undo = (e) => {
             if (e.code === 'KeyZ') {
-                // pixels = globs.get.undoManager.undo(pixels);
-                pixels = globals.undoManager.undo(pixels);
+                pixels = globals.get.undoManager.undo(pixels);
                 clearCanvas();
                 render();
             }
@@ -100,8 +97,8 @@ export default function Canvas({ globals, setGlobals, globs }) {
             mouse.removeListeners();
         };
 
-    // }, [mouse, globs.get.paletteToolbar, globs.get.undoManager]);
-    }, [mouse, setGlobals, globals.paletteToolbar, globals.undoManager]);
+    // }, [mouse, globs]);
+    }, [mouse, globals.get.paletteToolbar, globals.get.undoManager]);
 
     if (canvasRef.current) {
         render();
@@ -145,8 +142,7 @@ export default function Canvas({ globals, setGlobals, globs }) {
 
     function executeState_IDLE() {
         if (mouse.button[0] && !mouse.button[1] && !mouse.button[2]) {
-            // globs.get.undoManager.takeSnapshot(pixels);
-            globals.undoManager.takeSnapshot(pixels);
+            globals.get.undoManager.takeSnapshot(pixels);
             setState(states.DRAWING);
             executeCurrentState();
             return;
@@ -178,7 +174,7 @@ export default function Canvas({ globals, setGlobals, globs }) {
         const prevPos = screenToPixelCoords(mouse.prevPos.x, mouse.prevPos.y);
 
         if (isWithinBounds(pos.x, pos.y) && isWithinBounds(prevPos.x, prevPos.y))
-            drawLine(prevPos, pos, globals.paletteToolbar.activeColor);
+            drawLine(prevPos, pos, globals.get.paletteToolbar.activeColor);
     }
 
 
@@ -192,8 +188,8 @@ export default function Canvas({ globals, setGlobals, globs }) {
             const pos = screenToPixelCoords(mouse.pos.x, mouse.pos.y);
             if (!isWithinBounds(pos.x, pos.y)) return;
 
-            globals.undoManager.takeSnapshot(pixels);
-            const floodedPixels = floodFill(pos.x, pos.y, globals.paletteToolbar.activeColor);
+            globals.get.undoManager.takeSnapshot(pixels);
+            const floodedPixels = floodFill(pos.x, pos.y, globals.get.paletteToolbar.activeColor);
             render(floodedPixels);
             setState(states.IDLE);
             return;
@@ -202,10 +198,10 @@ export default function Canvas({ globals, setGlobals, globs }) {
 
     function executeState_COLOR_PICKING() {
         if (!mouse.button[1] && !mouse.button[0] && !mouse.button[2]) {
-            if (globals.paletteToolbar) {
+            if (globals.get.paletteToolbar) {
                 const pos = screenToPixelCoords(mouse.pos.x, mouse.pos.y);
 
-                globals.paletteToolbar.getCellByColor(getPixel(pos.x, pos.y));
+                globals.get.paletteToolbar.getCellByColor(getPixel(pos.x, pos.y));
             }
 
 
@@ -232,7 +228,7 @@ export default function Canvas({ globals, setGlobals, globs }) {
     }
 
 
-    function drawLine(point1, point2, color=globals.paletteToolbar.activeColor) {
+    function drawLine(point1, point2, color) {
         const line = getLineBetween(point1, point2);
         for (let pixel of line) {
             setPixel(pixel.x, pixel.y, color);

@@ -26,16 +26,15 @@ export default function Create() {
     const undoManager = useRef();
     if (!undoManager.current) undoManager.current = new UndoManager();
 
-    const [globals, setGlobals] = useState({ paletteToolbar: null, canvasRef: null, undoManager: undoManager.current });
-    const { globals: globs } = useGlobals({ paletteToolbar: null, canvasRef: null, undoManager: undoManager.current })
+    const { globals } = useGlobals({ paletteToolbar: null, canvasRef: null, undoManager: undoManager.current })
 
 
     return (
         <div className="drawing-app">
-            <Palette globals={globals} setGlobals={setGlobals} globs={globs} />
+            <Palette globals={globals} />
             <div className="canvas-saveform">
-                <Canvas globals={globals} setGlobals={setGlobals} globs={globs} />
-                <SaveDrawingForm globals={globals} setGlobals={setGlobals} globs={globs} />
+                <Canvas globals={globals} />
+                <SaveDrawingForm globals={globals} />
 
             </div>
         </div>
