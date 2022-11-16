@@ -10,10 +10,10 @@ export default function getLineBetween(point1, point2) {
         const t = step / D;
 
         const newPoint = {
-            x: ~~lerp(point1.x, point2.x, t),
-            y: ~~lerp(point1.y, point2.y, t)
-            //     x: Math.round(lerp(point1.x, point2.x, t)),
-            //     y: Math.round(lerp(point1.y, point2.y, t))
+            // x: ~~lerp(point1.x, point2.x, t),
+            // y: ~~lerp(point1.y, point2.y, t)
+            x: Math.round(lerp(point1.x, point2.x, t)),
+            y: Math.round(lerp(point1.y, point2.y, t))
         };
 
         points.push(newPoint);

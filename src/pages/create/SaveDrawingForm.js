@@ -16,6 +16,7 @@ import './SaveDrawingForm.css';
 
 
 export default function SaveDrawingForm({ globals }) {
+    // return <></>;
 
     const [drawingTitle, setDrawingTitle] = useState('');
     const [drawingInfo, setDrawingInfo] = useState('');

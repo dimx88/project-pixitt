@@ -8,6 +8,7 @@ import getLineBetween from '../../utils/getLine';
 
 // Drawing tools
 import { freehandTool } from './tools/freehandTool';
+import { lineTool } from './tools/lineTool';
 
 //  Styles
 import './Canvas.css';
@@ -23,7 +24,8 @@ export default function Canvas({ globals }) {
     // Setup
     //-----------------------------------------------------
 
-    const canvasRef = useRef(null);
+    const canvasRef = useRef();
+    const tempCanvasRef = useRef();
     // const ctx = canvasRef.current ? canvasRef.current.getContext('2d') : null;
 
     const dimensions = { width: 96, height: 64 };
@@ -44,12 +46,19 @@ export default function Canvas({ globals }) {
     const canvasFunctions = {
         screenToPixelCoords,
         isWithinBounds,
+        floodFill,
         drawLine,
         setPixel,
-        getPixel
+        getPixel,
+        getLineBetween,
+        renderPixel,
+        render
     };
     if (!toolsRef.current) {
-        toolsRef.current = { freehand: freehandTool(canvasFunctions, pixelsRef, mouse, globals) };
+        toolsRef.current = {
+            freehandTool: freehandTool(canvasFunctions, pixelsRef, mouse, globals),
+            lineTool: lineTool(canvasFunctions, pixelsRef, mouse, globals)
+        };
     }
 
     //-----------------------------------------------------
@@ -59,12 +68,14 @@ export default function Canvas({ globals }) {
     renderRef.current = render;
     //--------------------------------------------------------
     useEffect(() => {
-        // Pass reference of the drawing canvas element to the parent component 
-        if (!globals.get.canvsRef) globals.set('canvasRef', canvasRef.current); 
+        // Pass a reference of the drawing canvas element to the globals
+        if (!globals.get.canvsRef) globals.set('canvasRef', canvasRef.current);
+        if (!globals.get.tempCanvsRef) globals.set('tempCanvasRef', tempCanvasRef.current);
 
 
         // Don't create event listeners until we have a reference to the palette and undo manager
-        if (!globals.get.paletteToolbar || !globals.get.undoManager) return;    
+        if (!globals.get.paletteToolbar || !globals.get.undoManager) return;
+
 
 
         const executeCurrentStateWrapper = executeCurrentStateRef.current;
@@ -75,13 +86,10 @@ export default function Canvas({ globals }) {
 
         const undo = (e) => {
             if (e.code === 'KeyZ') {
-                // if (!globals.get.undoManager.canUndo()) return;
                 pixelsRef.current = globals.get.undoManager.undo(pixelsRef.current);
-                renderRef.current(null ,true);
+                renderRef.current(null, true);
             }
         }
-
-
 
         // Add listeners
         document.addEventListener('keydown', undo);
@@ -102,7 +110,7 @@ export default function Canvas({ globals }) {
             mouse.removeListeners();
         };
 
-    }, [mouse, globals.get.paletteToolbar, globals.get.undoManager, globals]);
+    }, [mouse, globals]);
 
     if (canvasRef.current) {
         render();
@@ -117,10 +125,11 @@ export default function Canvas({ globals }) {
 
 
     function executeCurrentState(e) {
-        toolsRef.current.freehand.onEvent(e);
+        toolsRef.current.lineTool.onEvent(e);
+        // toolsRef.current.freehandTool.onEvent(e);
 
-        // console.log('executing ', state.current, Math.random().toFixed(4));
         return;
+        // console.log('executing ', state.current, Math.random().toFixed(4));
         // eslint-disable-next-line
         switch (state.current) {
             case states.IDLE:
@@ -228,6 +237,8 @@ export default function Canvas({ globals }) {
     //--------------------------------
 
     function screenToPixelCoords(x, y) {
+        if (!y) return {x: ~~(x.x / pixelSize), y: ~~(x.y / pixelSize)};    // If an {x: y:} object was passed instead of seperate x y values
+
         return { x: ~~(x / pixelSize), y: ~~(y / pixelSize) };
     }
 
@@ -292,8 +303,8 @@ export default function Canvas({ globals }) {
     }
 
 
-    function renderPixel(x, y, ctx) {
-        ctx.fillStyle = getPixel(x, y);
+    function renderPixel(x, y, ctx, color) {
+        ctx.fillStyle = color || getPixel(x, y);
         ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
 
     }
@@ -309,7 +320,7 @@ export default function Canvas({ globals }) {
     function render(pixelsArr, shouldClear) {
         const ctx = canvasRef.current.getContext('2d');
 
-        if (shouldClear) {clearCanvas()};
+        if (shouldClear) { clearCanvas() };
 
         if (pixelsArr) {
             return renderPixels(pixelsArr, ctx);
@@ -330,13 +341,23 @@ export default function Canvas({ globals }) {
 
 
 
+    const display = { width: dimensions.width * pixelSize, height: dimensions.height * pixelSize };
     return (
-        <canvas
-            className="canvas"
-            id="canvas"
-            ref={canvasRef}
-            width={dimensions.width * pixelSize}
-            height={dimensions.height * pixelSize}
-        />
+        <div className="canvas-wrapper" style={display}>
+
+            <canvas
+                className="temp-canvas"
+                ref={tempCanvasRef}
+                width={display.width}
+                height={display.height}
+            />
+            <canvas
+                className="canvas"
+                ref={canvasRef}
+                width={display.width}
+                height={display.height}
+            />
+
+        </div>
     );
 }
