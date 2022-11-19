@@ -1,7 +1,7 @@
 .canvas-wrapper {
-    margin: 0 auto;
+    /* margin: 0 auto; */
 
-    border: 1px dashed red;
+    /* border: 1px dashed red; */
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
     position: relative;
 }
@@ -14,7 +14,6 @@
 }
 
 .temp-canvas {
-    /* opacity: 0.5; */
     position: absolute;
     top: 0;
     left: 0;

@@ -1,0 +1,8 @@
+.tools-panel {
+    /* border: 1px dashed red; */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 20px;
+    /* height: 100px; */
+}

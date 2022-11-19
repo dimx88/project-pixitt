@@ -61,6 +61,11 @@ export default function Canvas({ globals }) {
         };
     }
 
+
+    const activeToolRef = useRef();
+    if (!activeToolRef.current) activeToolRef.current = toolsRef.current.lineTool;
+    // if (!activeToolRef.current) activeToolRef.current = toolsRef.current.freehandTool;
+
     //-----------------------------------------------------
     const executeCurrentStateRef = useRef();
     executeCurrentStateRef.current = executeCurrentState;
@@ -85,15 +90,19 @@ export default function Canvas({ globals }) {
         // Mouse util -> add listeners and offset the coordinates relative to the drawing canvas element
         mouse.follow(canvasRef.current);
 
-        const undo = (e) => {
+        
+        // TODO: replace this with a cleaner solution
+        const keyboardShortcuts = (e) => {
             if (e.code === 'KeyZ') {
                 pixelsRef.current = globals.get.undoManager.undo(pixelsRef.current);
                 renderRef.current(null, true);
             }
+            if (e.code === 'Digit1') { setActiveTool('lineTool'); }
+            if (e.code === 'Digit2') { setActiveTool('freehandTool'); }
         }
 
         // Add listeners
-        document.addEventListener('keydown', undo);
+        document.addEventListener('keydown', keyboardShortcuts);
 
         document.addEventListener('mousedown', executeCurrentStateWrapper);
         document.addEventListener('mouseup', executeCurrentStateWrapper);
@@ -103,7 +112,7 @@ export default function Canvas({ globals }) {
 
         // Cleanup
         return () => {
-            document.removeEventListener('keydown', undo);
+            document.removeEventListener('keydown', keyboardShortcuts);
 
             document.removeEventListener('mousedown', executeCurrentStateWrapper);
             document.removeEventListener('mouseup', executeCurrentStateWrapper);
@@ -125,10 +134,15 @@ export default function Canvas({ globals }) {
     const state = { current: states.IDLE };
 
 
-    function executeCurrentState(e) {
-        toolsRef.current.lineTool.onEvent(e);
-        // toolsRef.current.freehandTool.onEvent(e);
+    function setActiveTool(toolName) {
+        activeToolRef.current = toolsRef.current[toolName];
+    }
 
+
+    function executeCurrentState(e) {
+
+        activeToolRef.current.onEvent(e);
+        
         return;
         // console.log('executing ', state.current, Math.random().toFixed(4));
         // eslint-disable-next-line
@@ -238,7 +252,7 @@ export default function Canvas({ globals }) {
     //--------------------------------
 
     function screenToPixelCoords(x, y) {
-        if (!y) return {x: ~~(x.x / pixelSize), y: ~~(x.y / pixelSize)};    // If an {x: y:} object was passed instead of seperate x y values
+        if (!y) return { x: ~~(x.x / pixelSize), y: ~~(x.y / pixelSize) };    // In case an {x: y:} object was passed instead of seperate x y values
 
         return { x: ~~(x / pixelSize), y: ~~(y / pixelSize) };
     }
