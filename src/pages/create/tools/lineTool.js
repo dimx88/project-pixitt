@@ -74,18 +74,15 @@ export function lineTool(canvasFunctions, pixelsRef, mouse, globals) {
                 return;
             }
 
-            if (!mouse.button[0]) {   // Stopped holding left mouse button
+            if (!mouse.button[0]) {   // Stopped holding left mouse button - commit line to pixel data & draw on canvas
                 drawing = false;
-
                 tempCtx.clearRect(0, 0, tempCtx.canvas.width, tempCtx.canvas.height);
-
                 drawLine(startPoint, endPoint, globals.get.paletteToolbar.activeColor);
-
                 initialize();
                 return;
             }
 
-            endPoint = screenToPixelCoords(mouse.pos);
+            endPoint = screenToPixelCoords(clampPoint(mouse.pos, { x: 0, y: 0 }, { x: globals.get.canvasRef.width - 1, y: globals.get.canvasRef.height - 1 }));
             line = getLineBetween(startPoint, endPoint);
 
             tempCtx.clearRect(0, 0, tempCtx.canvas.width, tempCtx.canvas.height);
@@ -97,6 +94,14 @@ export function lineTool(canvasFunctions, pixelsRef, mouse, globals) {
 
         }
 
+    }
+
+    function clampPoint(point, minPoint, maxPoint) {
+        return { x: clamp(point.x, minPoint.x, maxPoint.x), y: clamp(point.y, minPoint.y, maxPoint.y) };
+    }
+
+    function clamp(num, min, max) {
+        return Math.min(Math.max(num, min), max);
     }
 
 

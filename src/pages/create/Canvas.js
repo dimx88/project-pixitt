@@ -28,7 +28,7 @@ export default function Canvas({ globals }) {
     const tempCanvasRef = useRef();
     // const ctx = canvasRef.current ? canvasRef.current.getContext('2d') : null;
 
-    const dimensions = { width: 96, height: 64 };
+    const dimensions = useRef({ width: 96, height: 64 }).current;
     const pixelSize = 12;
     const defaultBackgroundColor = '#666666';
 
@@ -71,6 +71,7 @@ export default function Canvas({ globals }) {
         // Pass a reference of the drawing canvas element to the globals
         if (!globals.get.canvsRef) globals.set('canvasRef', canvasRef.current);
         if (!globals.get.tempCanvsRef) globals.set('tempCanvasRef', tempCanvasRef.current);
+        if (!globals.get.dimensions) globals.set('dimensions', dimensions);
 
 
         // Don't create event listeners until we have a reference to the palette and undo manager
@@ -110,7 +111,7 @@ export default function Canvas({ globals }) {
             mouse.removeListeners();
         };
 
-    }, [mouse, globals]);
+    }, [mouse, globals, dimensions]);
 
     if (canvasRef.current) {
         render();
