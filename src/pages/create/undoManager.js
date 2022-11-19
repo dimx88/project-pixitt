@@ -4,7 +4,7 @@ export default class UndoManager {
     constructor() {
         this.maxUndoSteps = 50;
         this.history = [];
-        console.log('undo manager created');
+        // console.log('undo manager created');
     }
 
     takeSnapshot(state) {
@@ -17,16 +17,16 @@ export default class UndoManager {
         const stateCopy = state.slice();
         this.history.push(stateCopy);
 
-        console.log('snapshot taken');
+        // console.log('snapshot taken');
 
     }
 
     undo(current) {
         if (this.history.length > 0) {
-            console.log('Undone');
+            // console.log('Undone');
             return this.history.pop();
         } else {
-            console.log('No undo states')
+            // console.log('No undo stsates')
             return current;
         }
     }

@@ -12,6 +12,7 @@ import { lineTool } from './tools/lineTool';
 
 //  Styles
 import './Canvas.css';
+import { useCallback } from 'react';
 
 
 
@@ -63,8 +64,7 @@ export default function Canvas({ globals }) {
 
 
     const activeToolRef = useRef();
-    if (!activeToolRef.current) activeToolRef.current = toolsRef.current.lineTool;
-    // if (!activeToolRef.current) activeToolRef.current = toolsRef.current.freehandTool;
+    
 
     //-----------------------------------------------------
     const executeCurrentStateRef = useRef();
@@ -72,17 +72,27 @@ export default function Canvas({ globals }) {
     const renderRef = useRef();
     renderRef.current = render;
     //--------------------------------------------------------
+
+    const setActiveTool = useCallback((toolName) => {
+        
+        activeToolRef.current = toolsRef.current[toolName];
+        globals.set('activeTool', toolName);
+    }, [globals])
+    
+    //-----------------------------------------------------
     useEffect(() => {
-        // Pass a reference of the drawing canvas element to the globals
+        // Pass globals
         if (!globals.get.canvsRef) globals.set('canvasRef', canvasRef.current);
         if (!globals.get.tempCanvsRef) globals.set('tempCanvasRef', tempCanvasRef.current);
         if (!globals.get.dimensions) globals.set('dimensions', dimensions);
+        if (!globals.get.setActiveTool) globals.set('setActiveTool', setActiveTool);
 
 
         // Don't create event listeners until we have a reference to the palette and undo manager
         if (!globals.get.paletteToolbar || !globals.get.undoManager) return;
 
-
+        // Set default tool
+        if (!activeToolRef.current) setActiveTool('freehandTool');
 
         const executeCurrentStateWrapper = executeCurrentStateRef.current;
 
@@ -97,8 +107,8 @@ export default function Canvas({ globals }) {
                 pixelsRef.current = globals.get.undoManager.undo(pixelsRef.current);
                 renderRef.current(null, true);
             }
-            if (e.code === 'Digit1') { setActiveTool('lineTool'); }
-            if (e.code === 'Digit2') { setActiveTool('freehandTool'); }
+            if (e.code === 'Digit1') { setActiveTool('freehandTool'); }
+            if (e.code === 'Digit2') { setActiveTool('lineTool'); }
         }
 
         // Add listeners
@@ -120,7 +130,7 @@ export default function Canvas({ globals }) {
             mouse.removeListeners();
         };
 
-    }, [mouse, globals, dimensions]);
+    }, [mouse, globals, dimensions, setActiveTool]);
 
     if (canvasRef.current) {
         render();
@@ -133,16 +143,13 @@ export default function Canvas({ globals }) {
     const states = { IDLE: 'IDLE', DRAWING: 'DRAWING', FILLING: 'FILLING', COLOR_PICKING: 'COLOR_PICKING', LOCKED: 'LOCKED' };
     const state = { current: states.IDLE };
 
-
-    function setActiveTool(toolName) {
-        activeToolRef.current = toolsRef.current[toolName];
-    }
-
-
+    
+    
     function executeCurrentState(e) {
-
-        activeToolRef.current.onEvent(e);
+        if (!activeToolRef.current) return;
         
+        activeToolRef.current.onEvent(e);
+
         return;
         // console.log('executing ', state.current, Math.random().toFixed(4));
         // eslint-disable-next-line

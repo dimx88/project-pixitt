@@ -1,12 +1,13 @@
 import './ToolsPanel.css';
 
-export default function ToolsPanel() {
+export default function ToolsPanel({ globals }) {
+
+    console.log('tools rendered');
+    console.log('active tool = ', globals.get.activeTool);
     return (
-    <div className="tools-panel">
-        <button className="btn">Smart Tool</button>
-        <button className="btn">Freehand Tool</button>
-        <button className="btn">Line Tool</button>
-        <button className="btn">Fill Tool</button>
-    </div>
+        <div className="tools-panel">
+            <button className={`btn ${globals.get.activeTool === 'freehandTool' ? 'active' : ''}`} onClick={() => globals.get.setActiveTool('freehandTool')}>Freehand</button>
+            <button className={`btn ${globals.get.activeTool === 'lineTool' ? 'active' : ''}`} onClick={() => globals.get.setActiveTool('lineTool')}>Line</button>
+        </div>
     );
 }

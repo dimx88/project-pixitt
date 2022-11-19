@@ -76,7 +76,7 @@ export default function SaveDrawingForm({ globals }) {
 
                 {!isPending && <button className="btn" onClick={onSubmit}>Save to Gallery</button>}
                 {isPending && <button className="btn" disabled>Saving...</button>}
-                {<button className="btn" onClick={() => downloadCanvas(globals.canvasRef)}>Download Image</button>}
+                {<button className="btn" onClick={() => downloadCanvas(globals.get.canvasRef)}>Download Image</button>}
             </form>
 
         </div>

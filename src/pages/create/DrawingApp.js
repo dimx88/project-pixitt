@@ -23,7 +23,14 @@ export default function DrawingApp() {
     const undoManager = useRef();
     if (!undoManager.current) undoManager.current = new UndoManager();
 
-    const { globals } = useGlobals({ paletteToolbar: null, canvasRef: null, tempCanvasRef: null, undoManager: undoManager.current })
+    const { globals } = useGlobals({ 
+        paletteToolbar: null, 
+        canvasRef: null, 
+        tempCanvasRef: null, 
+        undoManager: undoManager.current,
+        activeTool: null,
+        setActiveTool: null
+    });
 
 
     return (
