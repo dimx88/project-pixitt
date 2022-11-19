@@ -6,3 +6,14 @@
     gap: 20px;
     /* height: 100px; */
 }
+
+.tools-panel .btn.undo {
+    margin-top: 50px;
+    color: rgb(192, 138, 38);
+    border: 1px solid rgb(192, 138, 38);
+}
+
+.tools-panel .btn.undo:hover {
+    color: #ddd;
+    background-color: #444;
+}

@@ -8,6 +8,7 @@ export default function ToolsPanel({ globals }) {
         <div className="tools-panel">
             <button className={`btn ${globals.get.activeTool === 'freehandTool' ? 'active' : ''}`} onClick={() => globals.get.setActiveTool('freehandTool')}>Freehand</button>
             <button className={`btn ${globals.get.activeTool === 'lineTool' ? 'active' : ''}`} onClick={() => globals.get.setActiveTool('lineTool')}>Line</button>
+            <button className="btn undo" onClick={() => globals.get.undo()}>Undo</button>
         </div>
     );
 }
